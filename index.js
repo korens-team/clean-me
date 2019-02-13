@@ -9,6 +9,7 @@ const esprima = require("esprima")
 const rulesEnum = require('./rulesEnum')
 const noFlagArgs = require('./rules/noFlagArgs')
 const sideEffects = require('./rules/sideEffects')
+const noPromiseRule = require('./rules/noPromise')
 const namingConvensions = require('./rules/namingConvensions')
 const magicNumbers = require('./rules/magicNumbers')
 
@@ -54,6 +55,9 @@ const run = () => {
             case(rulesEnum.noSideEffects): {
               sideEffects.apply(ast)
               break
+            }
+            case(rulesEnum.noPromise): {
+              noPromiseRule.apply(ast)
             }
           }
         }
