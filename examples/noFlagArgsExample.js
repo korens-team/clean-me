@@ -21,8 +21,8 @@ function susu(a, b, c, d, isTemporary) {
         console.log(b)
     }
 }
-
-
+const temp = false;
+susu(1, 2, 3, 4, temp)
 
 function lala(isApple) {
     if (isApple) {

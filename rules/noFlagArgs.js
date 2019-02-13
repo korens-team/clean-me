@@ -7,39 +7,97 @@ class noFlagArgs {
     
     static apply(syntaxTree) {
         this.getAllFlaggedFunctions(syntaxTree)
-        this.functions.forEach((f, index) =>{
+        this.functions.forEach((f) =>{            
             recast.visit(syntaxTree, 
                 {
                     visitFunctionDeclaration: function (path) {
                         let currentNode = path.node
-                        if (currentNode.loc.start.line === f.node.loc.start.line &&
-                            currentNode.loc.start.column === f.node.loc.start.column) {                                
+                        if (currentNode.loc && 
+                            currentNode.loc.start.line === f.node.loc.start.line &&
+                            currentNode.loc.start.column === f.node.loc.start.column) {
                                 
+                                f.newFlaggedFuncName = f.node.id.name + f.flags[0].name
                                 const flaggedFunc = b.functionDeclaration({
                                     type: "Identifier",
-                                    name: currentNode.id.name + f.flags[index].name
-                                }, f.flags[index].flaggedPartParams, f.flags[index].flaggedPart)
+                                    name: currentNode.id.name + f.flags[0].name
+                                }, f.flags[0].flaggedPartParams, f.flags[0].flaggedPart)
 
+                                f.newUnflaggedFuncName = f.node.id.name                                
                                 const unflaggedFunc = b.functionDeclaration({
                                     type: "Identifier",
                                     name: currentNode.id.name
-                                }, f.flags[index].unflaggedPartParams, f.flags[index].unflaggedPart)
+                                }, f.flags[0].unflaggedPartParams, f.flags[0].unflaggedPart)
 
                                 path.insertBefore(flaggedFunc)
-                                path.insertBefore(unflaggedFunc)
+                                path.insertBefore(unflaggedFunc)                                
                                 return false
                             }                        
 
                         this.traverse(path)
                     }
+                })           
+
+                syntaxTree = estraverse.replace(syntaxTree, {
+                    enter: function (node) {
+                        if (node.type === "FunctionDeclaration" &&
+                        f.node.id.name === node.id.name &&
+                        node.loc !== null) {
+                            this.remove()
+                        }
+                    }
                 })
         })
+        
+        this.replaceCalls(syntaxTree)
+
         console.log(recast.prettyPrint(syntaxTree).code)
+        return syntaxTree 
     }
+    
+    static replaceCalls(syntaxTree) {
+        this.functions.forEach((f) => {
+            syntaxTree = estraverse.replace(syntaxTree, {
+                enter: function(node) {
+                    if (node.loc && node.type === 'CallExpression' && node.callee.name === f.node.id.name) {
+                        let newNode = {
+                            "type": "IfStatement",
+                            "test": node.arguments[f.flags[0].index],
+                            "consequent": {
+                                "type": "BlockStatement",
+                                "body": [{
+                                    "type": "ExpressionStatement",
+                                    "expression": {
+                                        "type": "CallExpression",
+                                        "callee": {
+                                            "type": "Identifier",
+                                            "name": f.newFlaggedFuncName
+                                        },
+                                        "arguments": node.arguments.filter((arg, index) => f.flags[0].flaggedPartOriginalParamsIndexes.includes(index))
+                                    }
+                                }]
+                            },
+                            "alternate": {
+                                "type": "BlockStatement",
+                                "body": [{
+                                    "type": "ExpressionStatement",
+                                    "expression": {
+                                        "type": "CallExpression",
+                                        "callee": {
+                                            "type": "Identifier",
+                                            "name": f.newUnflaggedFuncName
+                                        },
+                                        "arguments": node.arguments.filter((arg, index) => f.flags[0].unflaggedPartOriginalParamsIndexes.includes(index))
+                                    }
+                                }]
+                            }
+                        }
 
-    static buildUnflaggedFunctionsFromFlaggedFunction(node) {
-
-    }    
+                        return newNode
+                    }
+                }
+            })
+        })
+    }
 
     static getAllFlaggedFunctions(syntaxTree) {
         estraverse.traverse(syntaxTree, {
@@ -79,11 +137,14 @@ class noFlagArgs {
                             // Check if there is no other usage of this variable
                             if (!this.isVariableBeingUsedUnderNode(subnode.test.name || subnode.test.argument.name, subnode.consequent)) {
                                 flags.push({
+                                    index: params.findIndex((p) => p.name === (subnode.test.name || subnode.test.argument.name)),
                                     name: subnode.test.name || subnode.test.argument.name,
                                     flaggedPart: subnode.consequent,
                                     unflaggedPart: subnode.alternate,
                                     flaggedPartParams: params.filter((par) => this.isVariableBeingUsedUnderNode(par.name, subnode.consequent)),
-                                    unflaggedPartParams: params.filter((par) => this.isVariableBeingUsedUnderNode(par.name, subnode.alternate))
+                                    unflaggedPartParams: params.filter((par) => this.isVariableBeingUsedUnderNode(par.name, subnode.alternate)),
+                                    flaggedPartOriginalParamsIndexes: params.map((par, index) => {if(this.isVariableBeingUsedUnderNode(par.name, subnode.consequent)){return index}}),
+                                    unflaggedPartOriginalParamsIndexes: params.map((par, index) => {if(this.isVariableBeingUsedUnderNode(par.name, subnode.alternate)){return index}})
                                 })
                                 estraverse.VisitorOption.Break
                             }

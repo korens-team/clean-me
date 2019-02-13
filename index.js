@@ -64,6 +64,7 @@ const run = () => {
             }
             case(rulesEnum.noSideEffects): {
               ast = sideEffects.apply(ast)
+              sideEffects.getAllDeltas()
               break
             }
             case(rulesEnum.noPromise): {
