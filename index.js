@@ -6,6 +6,7 @@ const figlet = require("figlet");
 const shell = require("shelljs");
 const path = require('path'); 
 const fs =  require('fs'); 
+const runner = require("./runner.js")
 
 const rulesEnum = require('./rulesEnum')
 
@@ -30,7 +31,13 @@ const run = () => {
             const filePath = process.argv[index + 1];
             if(filePath){
                 if (fs.existsSync(filePath)) { 
-                    
+                    fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
+                        if (!err) {
+                            runner.run(filePath)
+                        } else {
+                            console.log(err);
+                        }
+                    });
                 } else{
                     console.error("missing file input");
                 }

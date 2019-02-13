@@ -3,17 +3,38 @@ const esprima = require("esprima")
 const codegen = require("escodegen")
 const estraverse = require("estraverse")
 
-run = () => {
-    fs.readFile('example.js', 'utf8', (err, contents) => {
-        const ast = esprima.parse(contents)
-        const code = codegen.generate(ast)
+const run = (filePath) => {
+    const code = fs.readFileSync(filePath, 'utf8')
 
-        estraverse.traverse(ast, {
-            enter: (node) => {
-                console.log(node)
-            }
-        })
-    })   
+    const ast = esprima.parse(code)
+    const afterCode = codegen.generate(ast)
+
+    estraverse.traverse(ast, {
+        enter: (node) => {
+            console.log(node)
+        }
+    })    
 }
 
-run();
+const getAllTypes = (filePath) => {
+    const code = fs.readFileSync(filePath, 'utf8')
+
+    const ast = esprima.parse(code)
+    const afterCode = codegen.generate(ast)
+
+    const types = []
+    estraverse.traverse(ast, {
+        enter: (node) => {
+            if (node.type && !types.includes(node.type)) {
+                types.push(node.type)
+            }
+        }
+    })    
+
+    console.log(types)
+}
+
+module.exports = {
+    run: run,
+    getAllTypes: getAllTypes
+}
