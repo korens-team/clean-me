@@ -5,7 +5,7 @@ const estraverse = require("estraverse")
 
 const run = (filePath) => {
     const code = fs.readFileSync(filePath, 'utf8')
-
+    
     const ast = esprima.parse(code)
     const afterCode = codegen.generate(ast)
 
