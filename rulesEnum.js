@@ -3,5 +3,6 @@ module.exports = {
     noFlagArgs: "-noFlagArgs",
     noSideEffects: "-noSideEffects",
     noMagicNumbers: "-noMagicNumbers",
-    noPromise: "-noPromise"
+    noPromise: "-noPromise",
+    encapsulateConditions: "-encapsulateConditions"
 }
