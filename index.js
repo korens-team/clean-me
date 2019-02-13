@@ -12,7 +12,7 @@ const init = () => {
     console.log(
       chalk.green(
         figlet.textSync("CleanMe", {
-          font: "Ghost",
+          font: "alligator",
           horizontalLayout: "default",
           verticalLayout: "default"
         })
