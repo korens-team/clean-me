@@ -13,6 +13,7 @@ const sideEffects = require('./rules/sideEffects')
 const noPromiseRule = require('./rules/noPromise')
 const namingConventions = require('./rules/namingConventions')
 const magicNumbers = require('./rules/magicNumbers')
+const encapsulateConditions = require('./rules/encapsulateConditions')
 
 const init = () => {
     // console.log(
@@ -25,7 +26,6 @@ const init = () => {
     //   )
     // );
   }
-  
 
 const run = () => {
     init();
@@ -70,10 +70,13 @@ const run = () => {
               ast = noPromiseRule.apply(ast)
               break
             }
+            case(rulesEnum.encapsulateConditions):{
+              ast = encapsulateConditions.apply(ast)
+              break
+            }
           }
         }
       });
-
       
       const afterCode = codegen.generate(ast, {
         format: {
