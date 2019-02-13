@@ -1,7 +1,7 @@
 const estraverse = require("estraverse")
 
 class SideEffectRule {
-    static apply = (ast) => {
+    static apply(ast) {
         const functions = getFunctionsWithParams(ast)
         const globals = getGlobalVariables(ast)
         estraverse.traverse(ast, {
@@ -11,7 +11,7 @@ class SideEffectRule {
         })
     }
 
-    getGlobalVariables = (ast) => {
+    getGlobalVariables(ast) {
         const globals = []
         estraverse.traverse(ast, {
             enter: (node, parent) => {
@@ -25,7 +25,7 @@ class SideEffectRule {
         return globals
     }
 
-    getFunctionsWithParams = (ast) => {
+    getFunctionsWithParams(ast) {
         const functions = []
         estraverse.traverse(ast, {
             enter: (node, parent) => {
