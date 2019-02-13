@@ -1,16 +1,14 @@
-const codegen = require("escodegen")
 const estraverse = require("estraverse")
 
-class noFlagArgs {
+class NamingConvensions {
     static apply(syntaxTree) {
         estraverse.traverse(syntaxTree, {
-            enter: (node, parent) => {
+            enter: (node) => {
                 console.log(node)
             }
-        })    
-    }
-
-
+        });
+    };
 }
 
-module.exports = noFlagArgs
+module.exports = NamingConvensions;
+

@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Launch Program",            
             "program": "${workspaceFolder}\\index.js",
-            "args": ["-f", "package.json", "-namingConventions"]
+            "args": ["-f", "example.js", "-noFlagArgs"]
         }
     ]
 }

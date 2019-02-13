@@ -3,16 +3,17 @@
 const inquirer = require("inquirer");
 const chalk = require("chalk");
 const figlet = require("figlet");
-const shell = require("shelljs");
-const path = require('path'); 
 const fs =  require('fs'); 
-const runner = require("./runner.js")
 const esprima = require("esprima")
 
 const rulesEnum = require('./rulesEnum')
 const noFlagArgs = require('./rules/noFlagArgs')
 const sideEffects = require('./rules/sideEffects')
+<<<<<<< HEAD
 const noPromiseRule = require('./rules/noPromise')
+=======
+const namingConvensions = require('./rules/namingConvensions')
+>>>>>>> fd16b080b6ec8bf9f531c50c6467976a99842b87
 
 const init = () => {
     console.log(
@@ -35,7 +36,7 @@ const run = () => {
             const filePath = process.argv[index + 1];
             if(filePath){
               if (fs.existsSync(filePath)) {                     
-                ast = esprima.parse(filePath)
+                ast = esprima.parse(fs.readFileSync(filePath, 'utf-8'))
               } else{
                 console.error("missing file input");
               }
@@ -43,13 +44,16 @@ const run = () => {
         } else {
           switch(val) {
             case(rulesEnum.namingConventions): {
-              console.log('korenkorenkoren')
+                namingConvensions.apply(ast)
+                break
             }
             case(rulesEnum.noFlagArgs): {
               noFlagArgs.apply(ast)
+              break
             }
             case(rulesEnum.noSideEffects): {
               sideEffects.apply(ast)
+              break
             }
             case(rulesEnum.noPromise): {
               noPromiseRule.apply(ast)
