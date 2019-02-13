@@ -12,6 +12,8 @@ const Literal_type = "Literal";
 const CamelCase_Regex = /^[a-z]+([A-Z][a-z0-9]+)*$/;
 const SnakeCase_Regex = /^[A-Z]+(\_[A-Z0-9]+)*/;
 
+const codeErrors = [];
+
 class NamingConventions {
     static apply(syntaxTree) {
 
@@ -59,6 +61,11 @@ class NamingConventions {
                     console.log(chalk.red("Use camelCase for vars declerations, row: " + declerationObj.row + " value: " + declerationObj.name));
                     declerationObj.newName = _.camelCase(declerationObj.name);
                     console.log("Use " + declerationObj.newName + " instead");
+                    codeErrors.push({
+                        start: declerationObj.row,
+                        end: declerationObj.row,
+                        description: "Use camelCase for vars declerations"
+                    });
                 }
             }
 
@@ -66,6 +73,11 @@ class NamingConventions {
                 console.log(chalk.red("use SNAKE_CASE for const numbers, row: " + declerationObj.row + " value: " + declerationObj.name));
                 declerationObj.newName = _.snakeCase(declerationObj.name).toUpperCase();
                 console.log("Use " + declerationObj.newName + " instead");
+                codeErrors.push({
+                    start: declerationObj.row,
+                    end: declerationObj.row,
+                    description: "Use camelCase for consts literals"
+                });
             }
         });
 
@@ -108,6 +120,10 @@ class NamingConventions {
 
         return newTree;
     };
+
+    static getAllDeltas() {
+        return codeErrors;
+    }
 }
 
 module.exports = NamingConventions;
