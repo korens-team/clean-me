@@ -34,7 +34,7 @@ const run = () => {
             const filePath = process.argv[index + 1];
             if(filePath){
               if (fs.existsSync(filePath)) {                     
-                ast = esprima.parse(fs.readFileSync(filePath, 'utf-8'))
+                ast = esprima.parse(fs.readFileSync(filePath, 'utf-8'), {loc: true})
               } else{
                 console.error("missing file input");
               }
@@ -59,6 +59,7 @@ const run = () => {
             }
             case(rulesEnum.noPromise): {
               noPromiseRule.apply(ast)
+              break
             }
           }
         }
