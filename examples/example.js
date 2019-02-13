@@ -12,11 +12,11 @@ function createFile(name, temp) {
 
   createFile("koren", flag);
 
-  function splitIntoFirstAndLastName(lala) {
+  function split_IntoFIRstAndLast_Name(lala) {
     lala = lala.split(" ");
   }
   
-  let name = "ofirelarat";
+  let FullName = "ofirelarat";
   splitIntoFirstAndLastName(name);
   console.log(name); 
 

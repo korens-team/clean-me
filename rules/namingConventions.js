@@ -22,35 +22,37 @@ class NamingConventions {
 
         estraverse.traverse(syntaxTree, {
             enter: (node, parent) => {
-                if(node.type == VariableDeclaration_type){
-                    declerationsArray[index] = {
-                        "kind": node.kind,
-                        "row": node.loc.start.line
-                    };
-                }
-                if(node.type == VariableDeclarator_type){
-                    declerationsArray[index].name = node.id.name;
-                    declerationsArray[index].valueType = node.init.type;
-                    declerationsArray[index].column = node.loc.start.column;
-                    index++;
-                }
-                if(node.type == FunctionDeclaration_type){
-                    declerationsArray[index] = {
-                        "name": node.id.name,
-                        "row": node.loc.start.line,
-                        "column": node.loc.start.column,
-                        "kind": FunctionDeclaration_type
-                    };
-                    index++;
-                }
-                if(node.type == Identifier_type && parent.type != VariableDeclarator_type && parent.type != FunctionDeclaration_type){
-                    declerationsArray[index] = {
-                        "name": node.name,
-                        "row": node.loc.start.line,
-                        "column": node.loc.start.column,
-                        "kind": Identifier_type
-                    };  
-                    index++;
+                if(node.loc){
+                    if(node.type == VariableDeclaration_type){
+                        declerationsArray[index] = {
+                            "kind": node.kind,
+                            "row": node.loc.start.line
+                        };
+                    }
+                    if(node.type == VariableDeclarator_type){
+                        declerationsArray[index].name = node.id.name;
+                        declerationsArray[index].valueType = node.init.type;
+                        declerationsArray[index].column = node.loc.start.column;
+                        index++;
+                    }
+                    if(node.type == FunctionDeclaration_type){
+                        declerationsArray[index] = {
+                            "name": node.id.name,
+                            "row": node.loc.start.line,
+                            "column": node.loc.start.column,
+                            "kind": FunctionDeclaration_type
+                        };
+                        index++;
+                    }
+                    if(node.type == Identifier_type && parent.type != VariableDeclarator_type && parent.type != FunctionDeclaration_type){
+                        declerationsArray[index] = {
+                            "name": node.name,
+                            "row": node.loc.start.line,
+                            "column": node.loc.start.column,
+                            "kind": Identifier_type
+                        };  
+                        index++;
+                    }
                 }
             }
         });
@@ -83,7 +85,7 @@ class NamingConventions {
 
         const newTree = estraverse.replace(syntaxTree, {
             enter: (node) => {
-                if(node.type == VariableDeclarator_type || node.type == FunctionDeclaration_type){
+                if(node.loc && (node.type == VariableDeclarator_type || node.type == FunctionDeclaration_type)){
                     const newNode = declerationsArray.find((declerationObj) => {
                         return declerationObj.row == node.loc.start.line &&
                             declerationObj.column == node.loc.start.column;

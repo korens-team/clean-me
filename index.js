@@ -16,15 +16,15 @@ const magicNumbers = require('./rules/magicNumbers')
 const encapsulateConditions = require('./rules/encapsulateConditions')
 
 const init = () => {
-    // console.log(
-    //   chalk.green(
-    //     figlet.textSync("CleanMe", {
-    //       font: "",
-    //       horizontalLayout: "default",
-    //       verticalLayout: "default"
-    //     })
-    //   )
-    // );
+    console.log(
+      chalk.green(
+        figlet.textSync("CleanMe", {
+          font: "",
+          horizontalLayout: "default",
+          verticalLayout: "default"
+        })
+      )
+    );
   }
 
 const run = () => {
