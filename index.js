@@ -39,7 +39,7 @@ const run = () => {
         } else {
           switch(val) {
             case(rulesEnum.namingConventions): {
-              console.log('korenkorenkoren')
+              
             }
           }
         }
