@@ -1,0 +1,9 @@
+const bla = 5;
+
+var a = bla; 
+
+const vlaBla = 4;
+const Bla_Blas = 54
+const TAG_FFE = 7
+let TTddd = "ofir";
+var dfmd_djdnYY = "ef33";

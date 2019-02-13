@@ -17,6 +17,7 @@
     "figlet": "^1.2.1",
     "fs": "0.0.1-security",
     "inquirer": "^6.2.2",
+    "lodash": "^4.17.11",
     "path": "^0.12.7",
     "recast": "^0.17.3",
     "shelljs": "^0.8.3"
