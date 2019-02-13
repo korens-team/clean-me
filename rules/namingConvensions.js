@@ -1,16 +1,8 @@
-const fs = require('fs');
-const esprima = require("esprima")
-const codegen = require("escodegen")
 const estraverse = require("estraverse")
 
 class NamingConvensions {
-    static apply (syntaxTree) {
-        const code = fs.readFileSync(filePath, 'utf8')
-        
-        const ast = esprima.parse(code)
-        NamingConvensions.apply(ast)
-
-        estraverse.traverse(ast, {
+    static apply(syntaxTree) {
+        estraverse.traverse(syntaxTree, {
             enter: (node) => {
                 console.log(node)
             }
@@ -18,5 +10,5 @@ class NamingConvensions {
     };
 }
 
-module.exports = {NamingConvensions};
+module.exports = NamingConvensions;
 

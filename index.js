@@ -12,6 +12,7 @@ const esprima = require("esprima")
 const rulesEnum = require('./rulesEnum')
 const noFlagArgs = require('./rules/noFlagArgs')
 const sideEffects = require('./rules/sideEffects')
+const namingConvensions = require('./rules/namingConvensions')
 
 const init = () => {
     console.log(
@@ -42,13 +43,16 @@ const run = () => {
         } else {
           switch(val) {
             case(rulesEnum.namingConventions): {
-              
+                namingConvensions.apply(ast)
+                break
             }
             case(rulesEnum.noFlagArgs): {
               noFlagArgs.apply(ast)
+              break
             }
             case(rulesEnum.noSideEffects): {
               sideEffects.apply(ast)
+              break
             }
           }
         }
