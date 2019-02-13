@@ -33,3 +33,13 @@ function lala(isApple) {
 function d(lol, isWhat) {
     console.log(lol + " " + isWhat)
 }
+
+bdika(1, 5, true, 8)
+
+function bdika(a, b, isKoren, c) {
+    if(isKoren) {
+        console(a + b)
+    } else {
+        console(c + b)
+    }
+}

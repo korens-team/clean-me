@@ -52,7 +52,7 @@ class noFlagArgs {
                 })
         })
         
-        this.replaceCalls(syntaxTree)        
+        this.replaceCalls(syntaxTree)
         return syntaxTree 
     }
 
@@ -65,7 +65,7 @@ class noFlagArgs {
                 description: this.getDescription()
             })
         })
-        console.log(currentDeltas)
+        
         currentDeltas
     }
     
