@@ -1,7 +1,6 @@
 const estraverse = require("estraverse")
 const chalk = require("chalk");
 const _ = require('lodash');
-const codegen = require("escodegen")
 
 const VariableDeclaration_type = "VariableDeclaration";
 const FunctionDeclaration_type = "FunctionDeclaration";
@@ -19,7 +18,7 @@ class NamingConventions {
         let index = 0;
 
         estraverse.traverse(syntaxTree, {
-            enter: (node) => {
+            enter: (node, parent) => {
                 if(node.type == VariableDeclaration_type){
                     declerationsArray[index] = {
                         "kind": node.kind,
@@ -41,13 +40,13 @@ class NamingConventions {
                     };
                     index++;
                 }
-                if(node.type == Identifier_type){
+                if(node.type == Identifier_type && parent.type != VariableDeclarator_type && parent.type != FunctionDeclaration_type){
                     declerationsArray[index] = {
                         "name": node.name,
                         "row": node.loc.start.line,
                         "column": node.loc.start.column,
                         "kind": Identifier_type
-                    };
+                    };  
                     index++;
                 }
             }
@@ -58,7 +57,7 @@ class NamingConventions {
                 if(!(!isNaN(declerationObj.value) && declerationObj.kind == "const" && SnakeCase_Regex.test(declerationObj.name))){
                     console.log(chalk.red("Use camelCase for vars declerations, row: " + declerationObj.row + " value: " + declerationObj.name));
                     declerationObj.newName = _.camelCase(declerationObj.name);
-                    console.log(declerationObj.newName);
+                    console.log("Use " + declerationObj.newName + " instead");
                 }
             }
 
@@ -105,9 +104,6 @@ class NamingConventions {
                 }
             }
         });
-
-        const afterCode = codegen.generate(newTree);
-        console.log(afterCode);        
 
         return newTree;
     };
