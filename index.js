@@ -12,6 +12,7 @@ const esprima = require("esprima")
 const rulesEnum = require('./rulesEnum')
 const noFlagArgs = require('./rules/noFlagArgs')
 const sideEffects = require('./rules/sideEffects')
+const noPromiseRule = require('./rules/noPromise')
 
 const init = () => {
     console.log(
@@ -49,6 +50,9 @@ const run = () => {
             }
             case(rulesEnum.noSideEffects): {
               sideEffects.apply(ast)
+            }
+            case(rulesEnum.noPromise): {
+              noPromiseRule.apply(ast)
             }
           }
         }
