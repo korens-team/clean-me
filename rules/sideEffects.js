@@ -133,13 +133,13 @@ SideEffectRule.replaceParamAssigment = function(func) {
                 }
             }
 
-            if (paramsLength > 1 && !didReplaceMultiple) {
+            /*if (paramsLength > 1 && !didReplaceMultiple) {
                 body = this.replaceMultipleParamAssignment(func)       
                 nodeToReplaceExpression = node
                 nodeToReplaceExpression.body.body = [body]
                 didReplaceMultiple = true
                 return nodeToReplaceExpression
-            }
+            }*/
         }
     })
 
@@ -149,10 +149,16 @@ SideEffectRule.replaceParamAssigment = function(func) {
 SideEffectRule.replaceFunctionCall = function(func, node) {
     const funcName = func.name
     const paramsLength = func.problems.length
-    
+    /*
     nodeToReplace = (paramsLength === 1) 
         ? this.generateSingleParamFunctionCall(func, node)
         : this.generateMultipleParamsFunctionCall(func, node)
+
+    if (paramsLength === 1) {
+        this.generateSingleParamFunctionCall(func,node)
+    }*/
+
+    this.generateSingleParamFunctionCall(func,node)
 
     return nodeToReplace
 }
