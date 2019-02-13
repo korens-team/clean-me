@@ -1,3 +1,4 @@
 module.exports = {
-    namingConventions: "-namingConventions"
+    namingConventions: "-namingConventions",
+    noFlagArgs: "-noFlagArgs"
 }
