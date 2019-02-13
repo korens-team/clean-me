@@ -149,16 +149,14 @@ SideEffectRule.replaceParamAssigment = function(func) {
 SideEffectRule.replaceFunctionCall = function(func, node) {
     const funcName = func.name
     const paramsLength = func.problems.length
-    /*
+    
     nodeToReplace = (paramsLength === 1) 
-        ? this.generateSingleParamFunctionCall(func, node)
-        : this.generateMultipleParamsFunctionCall(func, node)
+        ? this.generateSingleParamFunctionCall(func, node): node;
+        //: this.generateMultipleParamsFunctionCall(func, node)
 
     if (paramsLength === 1) {
         this.generateSingleParamFunctionCall(func,node)
-    }*/
-
-    this.generateSingleParamFunctionCall(func,node)
+    }
 
     return nodeToReplace
 }
