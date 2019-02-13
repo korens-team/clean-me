@@ -43,6 +43,7 @@ const run = () => {
           switch(val) {
             case(rulesEnum.noMagicNumbers):{
               magicNumbers.apply(ast)
+              break
             }
             case(rulesEnum.namingConventions): {
                 namingConvensions.apply(ast)
