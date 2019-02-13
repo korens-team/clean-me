@@ -99,7 +99,6 @@ class EncapsulateConditions {
                 }
             }
         });
-        //varsNames.push(varsNames.shift());
 
         return varsNames;
     }
