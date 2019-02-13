@@ -28,15 +28,12 @@ const init = () => {
 
 const run = () => {
     init();
-    let fileName = '';
     let ast
     process.argv.forEach(function (val, index, array) {
         if(val == '-f'){
             const filePath = process.argv[index + 1];
             if(filePath){
               if (fs.existsSync(filePath)) {                     
-                // runner.run(filePath)                
-                fileName = filePath
                 ast = esprima.parse(filePath)
               } else{
                 console.error("missing file input");
