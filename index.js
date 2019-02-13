@@ -7,9 +7,11 @@ const shell = require("shelljs");
 const path = require('path'); 
 const fs =  require('fs'); 
 const runner = require("./runner.js")
+const esprima = require("esprima")
 
 const rulesEnum = require('./rulesEnum')
 const noFlagArgs = require('./rules/noFlagArgs')
+const sideEffects = require('./ruels/sideEffects')
 
 const init = () => {
     console.log(
@@ -27,6 +29,7 @@ const init = () => {
 const run = () => {
     init();
     let fileName = '';
+    let ast
     process.argv.forEach(function (val, index, array) {
         if(val == '-f'){
             const filePath = process.argv[index + 1];
@@ -34,6 +37,7 @@ const run = () => {
               if (fs.existsSync(filePath)) {                     
                 // runner.run(filePath)                
                 fileName = filePath
+                ast = esprima.parse(filePath)
               } else{
                 console.error("missing file input");
               }
@@ -44,7 +48,10 @@ const run = () => {
               console.log('korenkorenkoren')
             }
             case(rulesEnum.noFlagArgs): {
-              noFlagArgs.apply(fileName)
+              noFlagArgs.apply(ast)
+            }
+            case(rulesEnum.noSideEffects): {
+              sideEffects.apply(ast)
             }
           }
         }
