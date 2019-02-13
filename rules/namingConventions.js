@@ -58,9 +58,9 @@ class NamingConventions {
         declerationsArray.forEach((declerationObj)=>{
             if(!CamelCase_Regex.test(declerationObj.name)){
                 if(!(declerationObj.valueType == Literal_type && declerationObj.kind == "const" && SnakeCase_Regex.test(declerationObj.name))){
-                    console.log(chalk.red("Use camelCase for vars declerations, row: " + declerationObj.row + " value: " + declerationObj.name));
+                    // console.log(chalk.red("Use camelCase for vars declerations, row: " + declerationObj.row + " value: " + declerationObj.name));
                     declerationObj.newName = _.camelCase(declerationObj.name);
-                    console.log("Use " + declerationObj.newName + " instead");
+                    // console.log("Use " + declerationObj.newName + " instead");
                     codeErrors.push({
                         start: declerationObj.row,
                         end: declerationObj.row,
@@ -70,9 +70,9 @@ class NamingConventions {
             }
 
             if(declerationObj.valueType == Literal_type && declerationObj.kind == "const" && !SnakeCase_Regex.test(declerationObj.name.toLowerCase())){
-                console.log(chalk.red("use SNAKE_CASE for const numbers, row: " + declerationObj.row + " value: " + declerationObj.name));
+                // console.log(chalk.red("use SNAKE_CASE for const numbers, row: " + declerationObj.row + " value: " + declerationObj.name));
                 declerationObj.newName = _.snakeCase(declerationObj.name).toUpperCase();
-                console.log("Use " + declerationObj.newName + " instead");
+                // console.log("Use " + declerationObj.newName + " instead");
                 codeErrors.push({
                     start: declerationObj.row,
                     end: declerationObj.row,

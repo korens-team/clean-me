@@ -32,7 +32,7 @@ class magicNumbers {
                     }
 
                     deltas.push(delta)
-                    console.log(chalk.red("You have a magic number on row " + node.loc.start.line + " at column " + node.loc.start.column))
+                    // console.log(chalk.red("You have a magic number on row " + node.loc.start.line + " at column " + node.loc.start.column))
                 }
             },
             leave: (node,parent) => {

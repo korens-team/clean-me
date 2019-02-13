@@ -38,8 +38,6 @@ class EncapsulateConditions {
         });
 
         logicStatementsArray.forEach((logicStatment) => {
-            console.log(chalk.red("Encapsulate complex if statments, row: " + logicStatment.ifNode.loc.start.line));            
-
             codeErrors.push({
                 "start": logicStatment.ifNode.loc.start.line,
                 "end":  logicStatment.ifNode.loc.end.line,
