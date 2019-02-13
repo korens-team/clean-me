@@ -30,22 +30,16 @@ const run = () => {
         if(val == '-f'){
             const filePath = process.argv[index + 1];
             if(filePath){
-                if (fs.existsSync(filePath)) { 
-                    fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
-                        if (!err) {
-                            runner.run(filePath)
-                        } else {
-                            console.log(err);
-                        }
-                    });
-                } else{
-                    console.error("missing file input");
-                }
+              if (fs.existsSync(filePath)) {                     
+                runner.run(filePath)                
+              } else{
+                console.error("missing file input");
+              }
             }
         } else {
           switch(val) {
             case(rulesEnum.namingConventions): {
-              console.log('haa')
+              console.log('korenkorenkoren')
             }
           }
         }
