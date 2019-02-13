@@ -12,8 +12,10 @@ function b(a, b, isTemporary) {
     }
 }
 
-function c() {
-    
+function lala(isApple) {
+    if (isApple) {
+        console.log(isApple)
+    }
 }
 
 function d(lol, isWhat) {
