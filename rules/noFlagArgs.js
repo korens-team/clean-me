@@ -2,7 +2,7 @@ const codegen = require("escodegen")
 const estraverse = require("estraverse")
 
 class noFlagArgs {
-    static functions = []
+    //static functions = []
     static apply(syntaxTree) {
         getAllFunctions(syntaxTree)
         estraverse.traverse(syntaxTree, {
