@@ -1,12 +1,3 @@
-function eliav(a1, a2) {
-    const b = 5
-    a1 = 5
-}
-
-function waaaa(b1, b2) {
-    b2 = 1
-}
-
 function torenking(a,b,c,d,e,f,g) {
     const v = 2
     const x = 3
@@ -22,4 +13,9 @@ function torenking(a,b,c,d,e,f,g) {
     } else {
         g = 3
     }
+}
+
+function eliav(a, b) {
+    a = 2
+    const c = b
 }

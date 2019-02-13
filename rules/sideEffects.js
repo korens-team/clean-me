@@ -1,13 +1,31 @@
 const estraverse = require("estraverse")
+const recast = require('recast')
+const builders = recast.types.builders
 
 class SideEffectRule {
     static apply(ast) {
         const functions = this.getFunctionsWithParams(ast)
 
-        console.log("functions")
-        console.log(functions)
+        //console.log("functions")
+        //console.log(functions)
+        //console.log(problematicFunctions)
+        //console.log(problematicFunctions[1].problems)
+        
+        const isFunctionProblematic = this.isFunctionProblematic
+        const problematicFunctions = this.getProblematicFunctions(ast, functions)
+        const problematicFunctionsNames = problematicFunctions.map((p) => p.name)
+        
+        recast.visit(ast, {
+            visitFunctionDeclaration: function(path) {
+                let node = path.node
 
-        this.checkFunctionsProblems(ast, functions)
+                if(isFunctionProblematic(problematicFunctionsNames, node)) {
+
+                }
+
+                this.traverse(path)
+            }
+        })
     }
 }
 
@@ -30,29 +48,32 @@ SideEffectRule.getFunctionsWithParams = function(ast) {
     return functions
 }
 
-SideEffectRule.checkFunctionsProblems = function(ast, functions) {
+SideEffectRule.getProblematicFunctions = function(ast, functions) {
     const funcNames = functions.map((f) => f.name)
+    const problematicFunctions = []
     estraverse.traverse(ast, {
         enter: (node) => {
             if (node.type && node.type === "FunctionDeclaration") {
                 const index = funcNames.indexOf(node.id.name) 
                 if (index !== -1) {
-                    let problems = this.checkNoSideEffectFunction(node, functions[index])
+                    let problematicParams = this.getProblematicParams(node, functions[index])                   
 
-                    if (problems.length > 0) {
-                        console.log("function: " + 
-                                    functions[index].name + 
-                                    " has these problems: " + 
-                                    problems)
-                    }
+                    problematicFunctions.push({
+                        name: node.id.name,
+                        node: node,
+                        problems: problematicParams
+                    })                    
                 }                   
             }
         }
     })
+
+    return problematicFunctions
 }
 
-SideEffectRule.checkNoSideEffectFunction = function(functionNode, func) {
+SideEffectRule.getProblematicParams = function(functionNode, func) {
     let problems = []
+    let params = []
     estraverse.traverse(functionNode, {
         enter: (node) => {            
             if(node.type && node.expression && node.expression.left &&
@@ -61,13 +82,23 @@ SideEffectRule.checkNoSideEffectFunction = function(functionNode, func) {
                func.params.includes(node.expression.left.name)) {
 
                 let problem = node.expression.left.name + 
-                              " is assigned but is a parameter in the function"
+                              " is assigned but is a parameter in the function\n"
 
                 problems.push(problem)
+
+                params.push({
+                    name: node.expression.left.name,
+                    value: node.expression.right.value
+                })
             }
         }
     })
-    return problems
+    //console.log(problems)
+    return params
+}
+
+SideEffectRule.isFunctionProblematic = function(arrProblematicFunctionName, functionNode) {
+    return (arrProblematicFunctionName.includes(functionNode.id.name))
 }
 
 module.exports = SideEffectRule
