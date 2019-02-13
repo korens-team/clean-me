@@ -12,6 +12,18 @@ function b(a, b, isTemporary) {
     }
 }
 
+function susu(a, b, c, d, isTemporary) {
+    if (isTemporary) {
+        console.log(a)
+        console.log(c)
+        console.log(d)
+    } else {
+        console.log(b)
+    }
+}
+
+
+
 function lala(isApple) {
     if (isApple) {
         console.log(isApple)
