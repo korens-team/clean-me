@@ -9,6 +9,7 @@ const fs =  require('fs');
 const runner = require("./runner.js")
 
 const rulesEnum = require('./rulesEnum')
+const noFlagArgs = require('./rules/noFlagArgs')
 
 const init = () => {
     console.log(
@@ -25,13 +26,14 @@ const init = () => {
 
 const run = () => {
     init();
-
+    let fileName = '';
     process.argv.forEach(function (val, index, array) {
         if(val == '-f'){
             const filePath = process.argv[index + 1];
             if(filePath){
               if (fs.existsSync(filePath)) {                     
-                runner.run(filePath)                
+                // runner.run(filePath)                
+                fileName = filePath
               } else{
                 console.error("missing file input");
               }
@@ -40,6 +42,9 @@ const run = () => {
           switch(val) {
             case(rulesEnum.namingConventions): {
               console.log('korenkorenkoren')
+            }
+            case(rulesEnum.noFlagArgs): {
+              noFlagArgs.apply(fileName)
             }
           }
         }
