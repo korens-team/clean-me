@@ -2,6 +2,7 @@ const estraverse = require("estraverse")
 const recast = require('recast')
 const builders = recast.types.builders
 
+const deltas = []
 class SideEffectRule {
     static apply(ast) {
         const functions = this.getFunctionsWithParams(ast)
@@ -40,8 +41,8 @@ class SideEffectRule {
         return newAst
     }
 
-    static getDeltas(ast) {
-        
+    static getAllDeltas() {
+        return deltas
     }
 }
 
@@ -106,6 +107,12 @@ SideEffectRule.getProblematicParams = function(functionNode, func) {
                     name: node.expression.left.name,
                     value: node.expression.right.value,
                     type: node.expression.right.type
+                })
+
+                deltas.push({
+                    start: node.loc.start.line,
+                    end: node.loc.end.line,
+                    description: "Variable is assigned but is a parameter of a function"
                 })
             }
         }
