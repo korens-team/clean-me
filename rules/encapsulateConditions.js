@@ -4,6 +4,15 @@ const chalk = require("chalk");
 const IfStatement_type = "IfStatement";
 const LogicalExpression_type = "LogicalExpression";
 const Identifier_type = "Identifier";
+const BinaryExpression_type = "BinaryExpression";
+const Literal_type = "Literal";
+
+const operationsMap = {
+    ">": "grater",
+    "<": "smaller",
+    "==": "equals",
+    "===": "equals",
+}
 
 class EncapsulateConditions {
     static apply(syntaxTree) {
@@ -82,8 +91,15 @@ class EncapsulateConditions {
                 if (subnode.type == Identifier_type) {
                     varsNames.push(subnode.name);
                 }
+                if(subnode.type == BinaryExpression_type && subnode.operator){
+                  varsNames.push(operationsMap[subnode.operator]);
+                }
+                if(subnode.type == Literal_type){
+                    varsNames.push(subnode.value);
+                }
             }
-        })
+        });
+        //varsNames.push(varsNames.shift());
 
         return varsNames;
     }
