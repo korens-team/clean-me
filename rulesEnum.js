@@ -2,5 +2,6 @@ module.exports = {
     namingConventions: "-namingConventions",
     noFlagArgs: "-noFlagArgs",
     noSideEffects: "-noSideEffects",
-    noMagicNumbers: "-noMagicNumbers"
+    noMagicNumbers: "-noMagicNumbers",
+    noPromise: "-noPromise"
 }
