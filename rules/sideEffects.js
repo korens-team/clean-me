@@ -2,7 +2,6 @@ const estraverse = require("estraverse")
 
 class SideEffectRule {
     static apply(ast) {
-        const problems = []
         const functions = this.getFunctionsWithParams(ast)
 
         console.log("functions")
@@ -15,7 +14,7 @@ class SideEffectRule {
 SideEffectRule.getFunctionsWithParams = function(ast) {
     const functions = []
     estraverse.traverse(ast, {
-        enter: (node, parent) => {
+        enter: (node) => {
             if(node.type === "FunctionDeclaration") {
                 let params = node.params.map((p) => p.name)
                 let func = {
@@ -34,7 +33,7 @@ SideEffectRule.getFunctionsWithParams = function(ast) {
 SideEffectRule.checkFunctionsProblems = function(ast, functions) {
     const funcNames = functions.map((f) => f.name)
     estraverse.traverse(ast, {
-        enter: (node, parent) => {
+        enter: (node) => {
             if (node.type && node.type === "FunctionDeclaration") {
                 const index = funcNames.indexOf(node.id.name) 
                 if (index !== -1) {
@@ -55,7 +54,7 @@ SideEffectRule.checkFunctionsProblems = function(ast, functions) {
 SideEffectRule.checkNoSideEffectFunction = function(functionNode, func) {
     let problems = []
     estraverse.traverse(functionNode, {
-        enter: (node, parent) => {            
+        enter: (node) => {            
             if(node.type && node.expression && node.expression.left &&
                node.type === "ExpressionStatement" &&
                node.expression.type === "AssignmentExpression" &&
