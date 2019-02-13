@@ -31,6 +31,7 @@ const run = () => {
     init();
     let ast
     let code;
+    let deltas = [];
     process.argv.forEach(function (val, index, array) {
         if(val == '-f'){
             const filePath = process.argv[index + 1];
@@ -60,6 +61,7 @@ const run = () => {
             }
             case(rulesEnum.noFlagArgs): {
               ast = noFlagArgs.apply(ast)
+              noFlagArgs.getAllDeltas()
               break
             }
             case(rulesEnum.noSideEffects): {

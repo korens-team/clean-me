@@ -5,6 +5,10 @@ const b = recast.types.builders
 
 class noFlagArgs {
     
+    static getDescription() {
+        return `This function uses flag arguments and should be splitted. Flag arguments are considered as a bad practice`
+    }
+
     static apply(syntaxTree) {
         this.getAllFlaggedFunctions(syntaxTree)
         this.functions.forEach((f) =>{            
@@ -48,10 +52,21 @@ class noFlagArgs {
                 })
         })
         
-        this.replaceCalls(syntaxTree)
-
-        console.log(recast.prettyPrint(syntaxTree).code)
+        this.replaceCalls(syntaxTree)        
         return syntaxTree 
+    }
+
+    static getAllDeltas() {
+        let currentDeltas = []
+        this.functions.forEach((func) => {
+            currentDeltas.push({
+                start: func.node.loc.start.line,
+                end: func.node.loc.end.line,
+                description: this.getDescription()
+            })
+        })
+        console.log(currentDeltas)
+        currentDeltas
     }
     
     static replaceCalls(syntaxTree) {
