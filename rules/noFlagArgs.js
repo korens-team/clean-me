@@ -2,25 +2,31 @@ const codegen = require("escodegen")
 const estraverse = require("estraverse")
 
 class noFlagArgs {
+<<<<<<< HEAD
     //static functions = []
+=======
+    
+>>>>>>> 5b734759c380eab0cb713db13aad0581cfdfde33
     static apply(syntaxTree) {
-        getAllFunctions(syntaxTree)
-        estraverse.traverse(syntaxTree, {
-            enter: (node, parent) => {
-                console.log(node)
-            }
-        })
+        this.getAllFunctions(syntaxTree)
+        this.functions.forEach((f) => console.log(f.id.name)) 
+        // estraverse.traverse(syntaxTree, {
+        //     enter: (node, parent) => {
+        //         console.log(node)
+        //     }
+        // })
     }
 
     static getAllFunctions(syntaxTree) {
         estraverse.traverse(syntaxTree, {
             enter: (node, parent) => {
                 if (node.type == 'FunctionDeclaration') {
-                    functions.push(node)
+                    this.functions.push(node)
                 }
             }
         })
     }
 }
 
+noFlagArgs.functions = []
 module.exports = noFlagArgs

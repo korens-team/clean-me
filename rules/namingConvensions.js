@@ -12,15 +12,15 @@ class NamingConvensions {
         estraverse.traverse(syntaxTree, {
             enter: (node) => {
                 if(node.type == VariableDeclaration_type){
-                    declerationsArray.push({
+                    declerationsArray[index] = {
                         "kind": node.kind,
                         "row": node.loc.start.line   
-                    });
+                    };
                 }
-                /*if(node.type == VariableDeclarator_type){
+                if(node.type == VariableDeclarator_type){
                     declerationsArray[index].name = node.id.name;
                     index++;
-                }*/
+                }
             }
         });
 
