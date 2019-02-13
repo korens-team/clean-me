@@ -2,7 +2,9 @@ let a = 5;
 let b = 7;
 let c = 8;
 
-if(a > b && b ==10 && c < a){
+const f = true;
+
+if(a > b && b ==10 && c < a || f){
     console.log(c);
 }
 

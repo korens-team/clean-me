@@ -1,5 +1,6 @@
 const estraverse = require("estraverse")
 const chalk = require("chalk");
+const _ = require('lodash');
 
 const IfStatement_type = "IfStatement";
 const LogicalExpression_type = "LogicalExpression";
@@ -44,7 +45,7 @@ class EncapsulateConditions {
                         "type": "VariableDeclarator",
                         "id": {
                             "type": "Identifier",
-                            "name": "check_" + logicStatment.subVarsNames.join("_")
+                            "name": _.camelCase("check_" + logicStatment.subVarsNames.join("_"))
                         },
                         "init": logicStatment.testLogic
                     }
