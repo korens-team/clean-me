@@ -14,15 +14,15 @@ const namingConventions = require('./rules/namingConventions')
 const magicNumbers = require('./rules/magicNumbers')
 
 const init = () => {
-    console.log(
-      chalk.green(
-        figlet.textSync("CleanMe", {
-          font: "alligator",
-          horizontalLayout: "default",
-          verticalLayout: "default"
-        })
-      )
-    );
+    // console.log(
+    //   chalk.green(
+    //     figlet.textSync("CleanMe", {
+    //       font: "",
+    //       horizontalLayout: "default",
+    //       verticalLayout: "default"
+    //     })
+    //   )
+    // );
   }
   
 
