@@ -1,4 +1,5 @@
 const estraverse = require("estraverse")
+const chalk = require("chalk");
 
 const IfStatement_type = "IfStatement";
 const LogicalExpression_type = "LogicalExpression";
@@ -6,14 +7,68 @@ const LogicalExpression_type = "LogicalExpression";
 class EncapsulateConditions {
     static apply(syntaxTree) {
         let logicStatementsArray = [];
+        let logicVars = [];
 
         estraverse.traverse(syntaxTree, {
-            enter: (node) => {
+            enter: (node,parent) => {
                 if(node.type == IfStatement_type && node.test.type == LogicalExpression_type){
-                    logicStatementsArray.push(node.test);
+                    logicStatementsArray.push({
+                        "testLogic": node.test,
+                        "ifNode": node,
+                        "ifParent": parent,
+                    });
                 }
             }
         });
+
+        logicStatementsArray.forEach((logicStatment) => {
+            console.log(chalk.red("Encapsulate complex if statments, row: " + logicStatment.ifNode.loc.start.line));            
+
+            var toAppend = {
+                "type": "VariableDeclaration",
+                "declarations": [
+                    {
+                        "type": "VariableDeclarator",
+                        "id": {
+                            "type": "Identifier",
+                            "name": "flag"
+                        },
+                        "init": logicStatment.testLogic
+                    }
+                ],
+                "kind": "const"
+            };
+
+            logicVars.push(toAppend);            
+        });
+
+        
+        const newTree = estraverse.replace(syntaxTree, {
+            enter: (node,parent) => {
+                if(node.type == IfStatement_type && node.test.type == LogicalExpression_type){
+                    const statment = logicStatementsArray.find((logicStatmentNode) => {
+                        return logicStatmentNode.ifNode.loc.start.line == node.loc.start.line &&
+                        logicStatmentNode.ifNode.loc.start.column == node.loc.start.column;
+                    });  
+                    
+                    if(statment){
+                        const logic = logicVars.find((logicVar) => {
+                            return logicVar.declarations[0].init == statment.testLogic;
+                        }); 
+                        if(logic){
+                            node.test = {
+                                "type": "Identifier",
+                                "name": logic.declarations[0].id.name
+                            };
+
+                            parent.body.splice(parent.body.indexOf(node), 0, logic);
+                        }
+                    }
+                }                    
+            }
+        });
+
+        return newTree;
     }
 }
 
