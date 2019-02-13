@@ -5,7 +5,7 @@ class noFlagArgs {
     static apply(syntaxTree) {
         estraverse.traverse(syntaxTree, {
             enter: (node, parent) => {
-                console.log("a")
+                console.log(node)
             }
         })    
     }

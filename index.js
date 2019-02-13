@@ -3,10 +3,7 @@
 const inquirer = require("inquirer");
 const chalk = require("chalk");
 const figlet = require("figlet");
-const shell = require("shelljs");
-const path = require('path'); 
 const fs =  require('fs'); 
-const runner = require("./runner.js")
 const esprima = require("esprima")
 
 const rulesEnum = require('./rulesEnum')
@@ -35,7 +32,7 @@ const run = () => {
             const filePath = process.argv[index + 1];
             if(filePath){
               if (fs.existsSync(filePath)) {                     
-                ast = esprima.parse(filePath)
+                ast = esprima.parse(fs.readFileSync(filePath, 'utf-8'))
               } else{
                 console.error("missing file input");
               }
