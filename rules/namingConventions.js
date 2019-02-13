@@ -7,9 +7,10 @@ const FunctionDeclaration_type = "FunctionDeclaration";
 const VariableDeclarator_type = "VariableDeclarator";
 const Identifier_type = "Identifier";
 const CallExpression_type = "CallExpression";
+const Literal_type = "Literal";
 
 const CamelCase_Regex = /^[a-z]+([A-Z][a-z0-9]+)*$/;
-const SnakeCase_Regex = /^[A-Z]+(_[A-Z0-9]+)*/;
+const SnakeCase_Regex = /^[A-Z]+(\_[A-Z0-9]+)*/;
 
 class NamingConventions {
     static apply(syntaxTree) {
@@ -27,7 +28,7 @@ class NamingConventions {
                 }
                 if(node.type == VariableDeclarator_type){
                     declerationsArray[index].name = node.id.name;
-                    declerationsArray[index].value = node.init.value;
+                    declerationsArray[index].valueType = node.init.type;
                     declerationsArray[index].column = node.loc.start.column;
                     index++;
                 }
@@ -54,14 +55,14 @@ class NamingConventions {
 
         declerationsArray.forEach((declerationObj)=>{
             if(!CamelCase_Regex.test(declerationObj.name)){
-                if(!(!isNaN(declerationObj.value) && declerationObj.kind == "const" && SnakeCase_Regex.test(declerationObj.name))){
+                if(!(declerationObj.valueType == Literal_type && declerationObj.kind == "const" && SnakeCase_Regex.test(declerationObj.name))){
                     console.log(chalk.red("Use camelCase for vars declerations, row: " + declerationObj.row + " value: " + declerationObj.name));
                     declerationObj.newName = _.camelCase(declerationObj.name);
                     console.log("Use " + declerationObj.newName + " instead");
                 }
             }
 
-            if(!isNaN(declerationObj.value) && declerationObj.kind == "const" && !SnakeCase_Regex.test(declerationObj.name)){
+            if(declerationObj.valueType == Literal_type && declerationObj.kind == "const" && !SnakeCase_Regex.test(declerationObj.name.toLowerCase())){
                 console.log(chalk.red("use SNAKE_CASE for const numbers, row: " + declerationObj.row + " value: " + declerationObj.name));
                 declerationObj.newName = _.snakeCase(declerationObj.name).toUpperCase();
                 console.log("Use " + declerationObj.newName + " instead");

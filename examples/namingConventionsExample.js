@@ -1,5 +1,5 @@
 /// Naming Convention File check
-
+const Bdff_Smdfkd = "some";
 const bla = 5;
 
 var a = bla; 
