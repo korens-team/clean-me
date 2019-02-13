@@ -3,6 +3,7 @@ const chalk = require("chalk");
 
 const IfStatement_type = "IfStatement";
 const LogicalExpression_type = "LogicalExpression";
+const Identifier_type = "Identifier";
 
 class EncapsulateConditions {
     static apply(syntaxTree) {
@@ -12,10 +13,13 @@ class EncapsulateConditions {
         estraverse.traverse(syntaxTree, {
             enter: (node,parent) => {
                 if(node.type == IfStatement_type && node.test.type == LogicalExpression_type){
+                    const subNames = this.getAllVarsInNodeNames(node.test);
+                    
                     logicStatementsArray.push({
                         "testLogic": node.test,
                         "ifNode": node,
                         "ifParent": parent,
+                        "subVarsNames": subNames
                     });
                 }
             }
@@ -31,7 +35,7 @@ class EncapsulateConditions {
                         "type": "VariableDeclarator",
                         "id": {
                             "type": "Identifier",
-                            "name": "flag"
+                            "name": "check_" + logicStatment.subVarsNames.join("_")
                         },
                         "init": logicStatment.testLogic
                     }
@@ -69,6 +73,19 @@ class EncapsulateConditions {
         });
 
         return newTree;
+    }
+
+    static getAllVarsInNodeNames(node) {
+        let varsNames = [];
+        estraverse.traverse(node, {
+            enter: (subnode) => {
+                if (subnode.type == Identifier_type) {
+                    varsNames.push(subnode.name);
+                }
+            }
+        })
+
+        return varsNames;
     }
 }
 
