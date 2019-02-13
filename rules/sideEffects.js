@@ -2,7 +2,8 @@ const estraverse = require("estraverse")
 
 class SideEffectRule {
     static apply = (ast) => {
-        const functions = []
+        const functions = getFunctionsWithParams(ast)
+        const globals = getGlobalVariables(ast)
         estraverse.traverse(ast, {
             enter: (node) => {
 
@@ -28,7 +29,7 @@ class SideEffectRule {
         const functions = []
         estraverse.traverse(ast, {
             enter: (node, parent) => {
-                if(true) {
+                if(node.type === "FunctionDeclaration") {
                     let params = node.params.map((p) => p.name)
                     let func = {
                         name: node.id.name,
