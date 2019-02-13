@@ -5,27 +5,43 @@ const builders = recast.types.builders
 class SideEffectRule {
     static apply(ast) {
         const functions = this.getFunctionsWithParams(ast)
+        const problematicFunctions = this.getProblematicFunctions(ast, functions)
+        const problematicFunctionsNames = problematicFunctions.map((p) => p.name)
 
         //console.log("functions")
         //console.log(functions)
         //console.log(problematicFunctions)
-        //console.log(problematicFunctions[1].problems)
-        
-        const isFunctionProblematic = this.isFunctionProblematic
-        const problematicFunctions = this.getProblematicFunctions(ast, functions)
-        const problematicFunctionsNames = problematicFunctions.map((p) => p.name)
-        
-        recast.visit(ast, {
-            visitFunctionDeclaration: function(path) {
-                let node = path.node
+        //console.log(problematicFunctions[1].problems)        
 
-                if(isFunctionProblematic(problematicFunctionsNames, node)) {
-
+        // replace param assignment to return statements
+        const newAst = estraverse.replace(ast, {
+            enter: (node, parent) => {
+                let nodeToReplaceFunction
+                let funcIndex
+                if (node.type === "FunctionDeclaration") {
+                    funcIndex = problematicFunctionsNames.indexOf(node.id.name)
+                    if (funcIndex !== -1) {
+                        const func = problematicFunctions[funcIndex]
+                        nodeToReplaceFunction = this.replaceParamAssigment(func) 
+                        return nodeToReplaceFunction
+                    }                    
+                } else if (node.type === "ExpressionStatement" && node.expression.type === "CallExpression") {
+                    const funcCallName = node.expression.callee.name
+                    funcIndex = problematicFunctionsNames.indexOf(funcCallName)
+                    if (funcIndex !== -1) {
+                        const func = problematicFunctions[funcIndex]
+                        nodeToReplaceFunction = this.replaceFunctionCall(func, node)
+                        return nodeToReplaceFunction
+                    }
                 }
-
-                this.traverse(path)
             }
         })
+
+        return newAst
+    }
+
+    static getDeltas(ast) {
+        
     }
 }
 
@@ -77,9 +93,9 @@ SideEffectRule.getProblematicParams = function(functionNode, func) {
     estraverse.traverse(functionNode, {
         enter: (node) => {            
             if(node.type && node.expression && node.expression.left &&
-               node.type === "ExpressionStatement" &&
-               node.expression.type === "AssignmentExpression" &&
-               func.params.includes(node.expression.left.name)) {
+                node.type === "ExpressionStatement" &&
+                node.expression.type === "AssignmentExpression" &&
+                func.params.includes(node.expression.left.name)) {
 
                 let problem = node.expression.left.name + 
                               " is assigned but is a parameter in the function\n"
@@ -88,7 +104,8 @@ SideEffectRule.getProblematicParams = function(functionNode, func) {
 
                 params.push({
                     name: node.expression.left.name,
-                    value: node.expression.right.value
+                    value: node.expression.right.value,
+                    type: node.expression.right.type
                 })
             }
         }
@@ -97,8 +114,150 @@ SideEffectRule.getProblematicParams = function(functionNode, func) {
     return params
 }
 
-SideEffectRule.isFunctionProblematic = function(arrProblematicFunctionName, functionNode) {
-    return (arrProblematicFunctionName.includes(functionNode.id.name))
+SideEffectRule.replaceParamAssigment = function(func) {
+    const paramsLength = func.problems.length
+    let didReplaceMultiple = false
+    const newAst = estraverse.replace(func.node, {
+        enter: (node) => {
+            let nodeToReplaceExpression
+            if(node.type && node.expression &&
+               node.type === "ExpressionStatement" &&
+               node.expression.type === "AssignmentExpression") {
+
+                const paramIndex = func.problems.map((p) => p.name).indexOf(node.expression.left.name)
+                if (paramIndex !== -1) {
+                    if (paramsLength == 1) {
+                        const param = func.problems[paramIndex]
+                        nodeToReplaceExpression = {
+                            "type": "ReturnStatement",
+                            "argument": {
+                                "type": "Literal",
+                                "value": param.value,
+                                "raw": param.value
+                            }
+                        }
+
+                        return nodeToReplaceExpression
+                    }     
+                }
+            }
+
+            if (paramsLength > 1 && !didReplaceMultiple) {
+                body = this.replaceMultipleParamAssignment(func)       
+                nodeToReplaceExpression = node
+                nodeToReplaceExpression.body.body = [body]
+                didReplaceMultiple = true
+                return nodeToReplaceExpression
+            }
+        }
+    })
+
+    return newAst
+}
+
+SideEffectRule.replaceFunctionCall = function(func, node) {
+    const funcName = func.name
+    const paramsLength = func.problems.length
+    
+    nodeToReplace = (paramsLength === 1) 
+        ? this.generateSingleParamFunctionCall(func, node)
+        : this.generateMultipleParamsFunctionCall(func, node)
+
+    return nodeToReplace
+}
+
+SideEffectRule.replaceMultipleParamAssignment = function(func) {
+    let nodeToReplace = {
+        "type": "ReturnStatement",
+        "argument": {
+            "type": "ObjectExpression",
+            "properties": [
+                
+            ]
+        }
+    }
+        
+    func.problems.forEach((param) => {
+        let paramNode = {
+            "type": "Property",
+            "key": {
+                "type": "Identifier",
+                "name": param.name
+            },
+            "computed": false,
+            "value": {
+                "type": param.type,
+                "value": param.value,
+                "raw": param.value
+            },
+            "kind": "init",
+            "method": false,
+            "shorthand": false
+        }
+
+        nodeToReplace.argument.properties.push(paramNode)
+    })
+
+    return nodeToReplace
+}
+
+SideEffectRule.generateSingleParamFunctionCall = function(func, node) {
+    const funcName = func.name
+    const paramName = func.problems[0].name
+    const nodeToReplace = {
+        "type": "ExpressionStatement",
+        "expression": {
+            "type": "AssignmentExpression",
+            "operator": "=",
+            "left": {
+                "type": "Identifier",
+                "name": paramName
+            },
+            "right": node.expression
+        }
+    }
+
+    return nodeToReplace
+}
+
+SideEffectRule.generateMultipleParamsFunctionCall = function(func, node) {
+    const funcName = func.name
+    const nodeToReplace = {
+        "type": "ExpressionStatement",
+        "expression": {
+            "type": "AssignmentExpression",
+            "operator": "=",
+            "left": {
+                "type": "ObjectPattern",
+                "properties": [
+
+                ]
+            },
+            "right": node.expression
+        }
+    }
+
+    func.problems.forEach((param) => {
+        let paramNode = {
+            "type": "Property",
+            "key": {
+                "type": "Identifier",
+                "name": param.name
+            },
+            "computed": false,
+            "value": {
+                "type": "Identifier",
+                "name": param.name
+            },
+            "kind": "init",
+            "method": false,
+            "shorthand": true
+        }
+
+        nodeToReplace.expression.left.properties.push(paramNode)
+    })
+
+    return nodeToReplace
 }
 
 module.exports = SideEffectRule
