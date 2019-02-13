@@ -96,10 +96,9 @@ const run = () => {
         if(err) {
           return console.log(err);
         }
-        
-        console.log(deltas)
-        console.log(afterCode)
+
         console.log("The file was saved!");
+        console.log(deltas)
       });
   };
   

@@ -12,15 +12,24 @@ function createFile(name, temp) {
 
   createFile("koren", flag);
 
-  function split_IntoFIRstAndLast_Name(lala) {
+  function Split_Into_FirstAndLastName(lala) {
     lala = lala.split(" ");
   }
   
   let FullName = "ofirelarat";
-  splitIntoFirstAndLastName(name);
+  Split_Into_FirstAndLastName(name);
   console.log(name); 
 
 
   if (fsm.state === "fetching" && isEmpty(listNode)) {
     console.log("bla");
   }
+
+
+  function promiser(){
+      return new Promise(function(res, reject){});
+  }
+
+  promiser.then(function(value){
+      console.log(value);
+  })
