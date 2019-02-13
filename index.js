@@ -9,11 +9,8 @@ const esprima = require("esprima")
 const rulesEnum = require('./rulesEnum')
 const noFlagArgs = require('./rules/noFlagArgs')
 const sideEffects = require('./rules/sideEffects')
-<<<<<<< HEAD
 const noPromiseRule = require('./rules/noPromise')
-=======
 const namingConvensions = require('./rules/namingConvensions')
->>>>>>> fd16b080b6ec8bf9f531c50c6467976a99842b87
 
 const init = () => {
     console.log(
