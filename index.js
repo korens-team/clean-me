@@ -10,7 +10,12 @@ const rulesEnum = require('./rulesEnum')
 const noFlagArgs = require('./rules/noFlagArgs')
 const sideEffects = require('./rules/sideEffects')
 const noPromiseRule = require('./rules/noPromise')
+<<<<<<< HEAD
 const namingConventions = require('./rules/namingConventions')
+=======
+const namingConvensions = require('./rules/namingConvensions')
+const magicNumbers = require('./rules/magicNumbers')
+>>>>>>> 64644eda389f91a84afced70900710100191dfd6
 
 const init = () => {
     console.log(
@@ -40,6 +45,10 @@ const run = () => {
             }
         } else {
           switch(val) {
+            case(rulesEnum.noMagicNumbers):{
+              magicNumbers.apply(ast)
+              break
+            }
             case(rulesEnum.namingConventions): {
                 namingConventions.apply(ast)
                 break
@@ -54,6 +63,7 @@ const run = () => {
             }
             case(rulesEnum.noPromise): {
               noPromiseRule.apply(ast)
+              break
             }
           }
         }
