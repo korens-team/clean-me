@@ -18,6 +18,7 @@
     "fs": "0.0.1-security",
     "inquirer": "^6.2.2",
     "path": "^0.12.7",
+    "recast": "^0.17.3",
     "shelljs": "^0.8.3"
   },
   "bin": {
