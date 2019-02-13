@@ -26,18 +26,19 @@ class EncapsulateConditions {
             enter: (node,parent) => {
                 if(node.type == IfStatement_type && node.test.type == LogicalExpression_type){
                     const subNames = this.getAllVarsInNodeNames(node.test);
-                    
-                    logicStatementsArray.push({
-                        "testLogic": node.test,
-                        "ifNode": node,
-                        "ifParent": parent,
-                        "subVarsNames": subNames
-                    });
+                    if(node.loc.start){
+                        logicStatementsArray.push({
+                            "testLogic": node.test,
+                            "ifNode": node,
+                            "ifParent": parent,
+                            "subVarsNames": subNames
+                        });
+                    }
                 }
             }
         });
 
-        logicStatementsArray.forEach((logicStatment) => {
+        logicStatementsArray.forEach((logicStatment) => {           
             console.log(chalk.red("Encapsulate complex if statments, row: " + logicStatment.ifNode.loc.start.line));            
 
             codeErrors.push({
@@ -67,26 +68,28 @@ class EncapsulateConditions {
         
         const newTree = estraverse.replace(syntaxTree, {
             enter: (node,parent) => {
-                if(node.type == IfStatement_type && node.test.type == LogicalExpression_type){
-                    const statment = logicStatementsArray.find((logicStatmentNode) => {
-                        return logicStatmentNode.ifNode.loc.start.line == node.loc.start.line &&
-                        logicStatmentNode.ifNode.loc.start.column == node.loc.start.column;
-                    });  
-                    
-                    if(statment){
-                        const logic = logicVars.find((logicVar) => {
-                            return logicVar.declarations[0].init == statment.testLogic;
-                        }); 
-                        if(logic){
-                            node.test = {
-                                "type": "Identifier",
-                                "name": logic.declarations[0].id.name
-                            };
+                if(node.loc.start){
+                    if(node.type == IfStatement_type && node.test.type == LogicalExpression_type){
+                        const statment = logicStatementsArray.find((logicStatmentNode) => {
+                            return logicStatmentNode.ifNode.loc.start.line == node.loc.start.line &&
+                            logicStatmentNode.ifNode.loc.start.column == node.loc.start.column;
+                        });  
+                        
+                        if(statment){
+                            const logic = logicVars.find((logicVar) => {
+                                return logicVar.declarations[0].init == statment.testLogic;
+                            }); 
+                            if(logic){
+                                node.test = {
+                                    "type": "Identifier",
+                                    "name": logic.declarations[0].id.name
+                                };
 
-                            parent.body.splice(parent.body.indexOf(node), 0, logic);
+                                parent.body.splice(parent.body.indexOf(node), 0, logic);
+                            }
                         }
-                    }
-                }                    
+                    }  
+                }                  
             }
         });
 
