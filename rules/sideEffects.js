@@ -4,31 +4,12 @@ class SideEffectRule {
     static apply(ast) {
         const problems = []
         const functions = this.getFunctionsWithParams(ast)
-        const globals = this.getGlobalVariables(ast)
 
         console.log("functions")
         console.log(functions)
-        console.log("globals")
-        console.log(globals)
 
         this.checkFunctionsProblems(ast, functions)
-        this.checkGlobalVariablesProblems(ast, globals)
     }
-}
-
-SideEffectRule.getGlobalVariables = function(ast) {
-    const globals = []
-    estraverse.traverse(ast, {
-        enter: (node, parent) => {
-            if(parent && parent.type && node.type &&
-               parent.type === "Program" && node.type === "VariableDeclaration") {
-                let varName = node.declarations[0].id.name
-                globals.push(varName)
-            }
-        }
-    })
-
-    return globals
 }
 
 SideEffectRule.getFunctionsWithParams = function(ast) {
@@ -55,13 +36,16 @@ SideEffectRule.checkFunctionsProblems = function(ast, functions) {
     estraverse.traverse(ast, {
         enter: (node, parent) => {
             if (node.type && node.type === "FunctionDeclaration") {
-                const index = funcNames.indexOf(node) 
+                const index = funcNames.indexOf(node.id.name) 
                 if (index !== -1) {
                     let problems = this.checkNoSideEffectFunction(node, functions[index])
-                    console.log("function: " + 
-                                functions[index].name + 
-                                " has these problems: " + 
-                                problems)
+
+                    if (problems.length > 0) {
+                        console.log("function: " + 
+                                    functions[index].name + 
+                                    " has these problems: " + 
+                                    problems)
+                    }
                 }                   
             }
         }
@@ -77,20 +61,14 @@ SideEffectRule.checkNoSideEffectFunction = function(functionNode, func) {
                node.expression.type === "AssignmentExpression" &&
                func.params.includes(node.expression.left.name)) {
 
-                let problem = "Var: " +
-                              node.expression.left.name + 
-                              " is assigned but is a parameter in the function: " + 
-                              func.name
+                let problem = node.expression.left.name + 
+                              " is assigned but is a parameter in the function"
 
                 problems.push(problem)
             }
         }
     })
     return problems
-}
-
-SideEffectRule.checkGlobalVariablesProblems = function(ast, globals) {
-    
 }
 
 module.exports = SideEffectRule
