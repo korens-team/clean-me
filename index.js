@@ -76,11 +76,11 @@ const run = () => {
 
       
       const afterCode = codegen.generate(ast, {
-        format: {
+       /*format: {
           preserveBlankLines: true
         },
-        comment: true,
-        sourceCode: code
+        //comment: true,
+        sourceCode: code*/
       });
 
       fs.writeFile("after-file.js", afterCode, function(err) {     

@@ -5,6 +5,11 @@ function a(b,c){
   }
 }
 
+var a = {
+	name:4,
+	id:3
+	}
+
 
 
  r = () => {

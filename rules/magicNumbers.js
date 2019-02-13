@@ -5,7 +5,7 @@ class magicNumbers {
     static apply(ast) {
         
         var parents = []
-        
+        return this.replace(ast)
         estraverse.traverse(ast, {
             enter: (node, parent) => {
           
@@ -56,7 +56,7 @@ magicNumbers.replace = function(ast){
                 }
                 parents.push(p)
             }
-            if(parent && parent.type != "VariableDeclarator" && node.type == "Literal"){
+            if(parent && (parent.type != "VariableDeclarator" && parent.type != "Property") && node.type == "Literal"){
                 //console.log(parents))
                 lastVar = varFuncCall()
                 obj = {
@@ -105,7 +105,7 @@ magicNumbers.replace = function(ast){
     })
 
    // console.log(result)
-   console.log(codegen.generate(result))
+  // console.log(codegen.generate(result))
    return result
 }
 
