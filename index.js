@@ -5,6 +5,7 @@ const chalk = require("chalk");
 const figlet = require("figlet");
 const fs =  require('fs'); 
 const esprima = require("esprima")
+const codegen = require("escodegen")
 
 const rulesEnum = require('./rulesEnum')
 const noFlagArgs = require('./rules/noFlagArgs')
@@ -29,12 +30,20 @@ const init = () => {
 const run = () => {
     init();
     let ast
+    let code;
     process.argv.forEach(function (val, index, array) {
         if(val == '-f'){
             const filePath = process.argv[index + 1];
             if(filePath){
-              if (fs.existsSync(filePath)) {                     
-                ast = esprima.parse(fs.readFileSync(filePath, 'utf-8'), {loc: true})
+              if (fs.existsSync(filePath)) {
+                code = fs.readFileSync(filePath, 'utf-8');                     
+                ast = esprima.parse(code, {
+                  raw: true,
+                  loc: true,
+                  range: true,
+                  comment: true,
+                  tokens: true
+                })
               } else{
                 console.error("missing file input");
               }
@@ -42,27 +51,44 @@ const run = () => {
         } else {
           switch(val) {
             case(rulesEnum.noMagicNumbers):{
-              magicNumbers.apply(ast)
+              ast = magicNumbers.apply(ast)
               break
             }
             case(rulesEnum.namingConventions): {
-                namingConventions.apply(ast)
+                ast = namingConventions.apply(ast)
                 break
             }
             case(rulesEnum.noFlagArgs): {
-              noFlagArgs.apply(ast)
+              ast = noFlagArgs.apply(ast)
               break
             }
             case(rulesEnum.noSideEffects): {
-              sideEffects.apply(ast)
+              ast = sideEffects.apply(ast)
               break
             }
             case(rulesEnum.noPromise): {
-              noPromiseRule.apply(ast)
+              ast = noPromiseRule.apply(ast)
               break
             }
           }
         }
+      });
+
+      
+      const afterCode = codegen.generate(ast, {
+       /*format: {
+          preserveBlankLines: true
+        },
+        //comment: true,
+        sourceCode: code*/
+      });
+
+      fs.writeFile("after-file.js", afterCode, function(err) {     
+        if(err) {
+          return console.log(err);
+        }
+  
+        console.log("The file was saved!");
       });
   };
   
