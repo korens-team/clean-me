@@ -15,6 +15,8 @@ const operationsMap = {
     "===": "equals",
 }
 
+const codeErrors = [];
+
 class EncapsulateConditions {
     static apply(syntaxTree) {
         let logicStatementsArray = [];
@@ -37,6 +39,12 @@ class EncapsulateConditions {
 
         logicStatementsArray.forEach((logicStatment) => {
             console.log(chalk.red("Encapsulate complex if statments, row: " + logicStatment.ifNode.loc.start.line));            
+
+            codeErrors.push({
+                "start": logicStatment.ifNode.loc.start.line,
+                "end":  logicStatment.ifNode.loc.end.line,
+                "description": "Encapsulate complex if statments to const variable"
+            })
 
             var toAppend = {
                 "type": "VariableDeclaration",
@@ -102,6 +110,10 @@ class EncapsulateConditions {
         });
 
         return varsNames;
+    }
+
+    static getAllDeltas() {
+        return codeErrors;
     }
 }
 

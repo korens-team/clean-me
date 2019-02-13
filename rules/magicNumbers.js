@@ -1,11 +1,16 @@
 const estraverse = require("estraverse")
 const codegen = require("escodegen")
+const chalk = require("chalk");
 class magicNumbers {
+
+    static getAllDeltas(){
+        return this.deltas
+    }
 
     static apply(ast) {
         
-        var parents = []
-        return this.replace(ast)
+        var deltas = this.deltas
+        
         estraverse.traverse(ast, {
             enter: (node, parent) => {
           
@@ -20,7 +25,14 @@ class magicNumbers {
                 if(parent && parent.type != "VariableDeclarator" && node.type == "Literal"){
                  //  console.log(node)
                     //console.log(this.getVarSuggestion())
-                    console.log("You have a magic number on row " + node.loc.start.line + " at column " + node.loc.start.column)
+                    let delta = {
+                        start:node.loc.start.line,
+                        end:node.loc.end.line,
+                        description:"koren with the big dick and is horney as fuck"
+                    }
+
+                    deltas.push(delta)
+                    console.log(chalk.red("You have a magic number on row " + node.loc.start.line + " at column " + node.loc.start.column))
                 }
             },
             leave: (node,parent) => {
@@ -30,7 +42,8 @@ class magicNumbers {
                 
             }
         })
-        this.replace(ast) 
+        //this.replace(ast)
+        return this.replace(ast) 
         //console.log(codegen.generate(result))
        // console.log(parents)
     }
@@ -40,7 +53,7 @@ class magicNumbers {
 magicNumbers.v = "VAR_0"
 magicNumbers.indx = 0
 
-
+magicNumbers.deltas = []
 
 magicNumbers.replace = function(ast){
     var parents = []
