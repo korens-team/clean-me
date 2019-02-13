@@ -6,6 +6,7 @@ const figlet = require("figlet");
 const shell = require("shelljs");
 const path = require('path'); 
 const fs =  require('fs'); 
+const runner = require("./runner.js")
 
 const init = () => {
     console.log(
@@ -30,7 +31,7 @@ const run = () => {
                 if (fs.existsSync(filePath)) { 
                     fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
                         if (!err) {
-                            console.log('file data: ' + data);
+                            runner.run(filePath)
                         } else {
                             console.log(err);
                         }
