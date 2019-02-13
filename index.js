@@ -54,6 +54,7 @@ const run = () => {
             }
             case(rulesEnum.noPromise): {
               noPromiseRule.apply(ast)
+              break
             }
           }
         }
