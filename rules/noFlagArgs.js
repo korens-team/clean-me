@@ -2,11 +2,7 @@ const codegen = require("escodegen")
 const estraverse = require("estraverse")
 
 class noFlagArgs {
-<<<<<<< HEAD
-    //static functions = []
-=======
     
->>>>>>> 5b734759c380eab0cb713db13aad0581cfdfde33
     static apply(syntaxTree) {
         this.getAllFunctions(syntaxTree)
         this.functions.forEach((f) => console.log(f.id.name)) 
