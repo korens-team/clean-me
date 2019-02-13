@@ -11,7 +11,7 @@ const esprima = require("esprima")
 
 const rulesEnum = require('./rulesEnum')
 const noFlagArgs = require('./rules/noFlagArgs')
-const sideEffects = require('./ruels/sideEffects')
+const sideEffects = require('./rules/sideEffects')
 
 const init = () => {
     console.log(
