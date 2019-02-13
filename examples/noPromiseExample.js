@@ -7,44 +7,49 @@ function abd() {
 }
 
 function prms(num) {
-    const pr = new Promise(function (resolve, reject) {
+    var ad = 4
+    return new Promise(function (resolve, reject) {
         const ab = abc()
         if (num == 1) {
-            resolve('hey')
+            resolve('hey');
         } else {
-            reject('error')
+            reject('error');
         }
     })
 
-    return pr
+    var z = 9
 }
 
 function prmsNew(num) {
-    const pr = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
         const ab = abc()
         abd()
         if (num == 1) {
-            resolve('hey')
+            resolve('hey');
         } else {
-            reject('error')
+            reject('error');
         }
     })
-
-    return pr
 }
 
 prms(1)
-    .then((value) => {
+    .then(function(value) {
         console.log(value);
     })
 
-async function bla() {
+function bla() {
+    prms(1).then(function(value) {
+        console.log(value);
+    }) 
+}
+bla()
+
+async function bla2() {
     try {
         console.log(await prms(1));
     } catch (err) {
         console.error(err);
-    } 
+    }
 }
-bla()
 
 module.exports = prms
