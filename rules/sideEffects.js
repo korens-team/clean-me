@@ -55,7 +55,7 @@ SideEffectRule.checkFunctionsProblems = function(ast, functions) {
 SideEffectRule.checkNoSideEffectFunction = function(functionNode, func) {
     let problems = []
     estraverse.traverse(functionNode, {
-        enter: (node, parent) => {
+        enter: (node, parent) => {            
             if(node.type && node.expression && node.expression.left &&
                node.type === "ExpressionStatement" &&
                node.expression.type === "AssignmentExpression" &&
