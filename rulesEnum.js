@@ -1,5 +1,6 @@
 module.exports = {
     namingConventions: "-namingConventions",
     noFlagArgs: "-noFlagArgs",
-    noSideEffects: "-noSideEffects"
+    noSideEffects: "-noSideEffects",
+    noMagicNumbers: "-noMagicNumbers"
 }
