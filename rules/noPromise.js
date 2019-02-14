@@ -167,7 +167,7 @@ class NoPromiseRule {
                     }
                 }
             })
-            console.log(element);
+            //console.log(element);
             result.push(obj)
         });
 
