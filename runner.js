@@ -15,6 +15,8 @@ const namingConventions = require('./rules/namingConventions')
 const magicNumbers = require('./rules/magicNumbers')
 const encapsulateConditions = require('./rules/encapsulateConditions')
 
+let deltas = [];
+
 const init = () => {
     console.log(
       chalk.green(
@@ -27,30 +29,28 @@ const init = () => {
     );
   }
 
-const run = () => {
+const run = (filePath, options) => {
     init();
     let ast
     let code;
-    let deltas = [];
-    process.argv.forEach(function (val, index, array) {
-        if(val == '-f'){
-            const filePath = process.argv[index + 1];
-            if(filePath){
-              if (fs.existsSync(filePath)) {
-                code = fs.readFileSync(filePath, 'utf-8');                     
-                ast = esprima.parse(code, {
-                  raw: true,
-                  loc: true,
-                  range: true,
-                  comment: true,
-                  tokens: true
-                })
-              } else{
-                console.error("missing file input");
-              }
-            }
-        } else {
-          switch(val) {
+
+    if(filePath){
+        if (fs.existsSync(filePath)) {
+          code = fs.readFileSync(filePath, 'utf-8');                     
+          ast = esprima.parse(code, {
+            raw: true,
+            loc: true,
+            range: true,
+            comment: true,
+            tokens: true
+          })
+        } else{
+          console.error("missing file input");
+        }
+      }
+
+    options.forEach(function (option) {
+        switch(option) {
             case(rulesEnum.noMagicNumbers):{
               ast = magicNumbers.apply(ast)
               deltas.push(magicNumbers.getAllDeltas())
@@ -73,7 +73,6 @@ const run = () => {
             }
             case(rulesEnum.noPromise): {
               ast = noPromiseRule.apply(ast)
-              deltas.push(noPromiseRule.getAllDeltas())
               break
             }
             case(rulesEnum.encapsulateConditions):{
@@ -82,7 +81,6 @@ const run = () => {
               break
             }
           }
-        }
       });
       
       const afterCode = codegen.generate(ast, {
@@ -97,10 +95,14 @@ const run = () => {
         if(err) {
           return console.log(err);
         }
-
+  
         console.log("The file was saved!");
-        console.log(deltas)
       });
   };
-  
-  run();
+
+
+  const getDeltas = () => {
+      return deltas;
+  }
+
+  module.exports = {run, getDeltas};

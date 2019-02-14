@@ -2,6 +2,14 @@ const estraverse = require("estraverse")
 const codegen = require("escodegen")
 
 const funcsNames = []
+const deltas = []
+
+const deltaDescEnum = {
+    resolve: 'Using of resolve in promise. Return the value instead.',
+    reject: 'Using of reject in promise. Throw an error instead.',
+    async: 'Use async function instead of Promise and when invoking functions with the "await" keyword.',
+    await: 'Use await <func name> when resolving async function.'
+}
 
 class NoPromiseRule {
 
@@ -50,6 +58,10 @@ class NoPromiseRule {
     }
 
 
+    static getAllDeltas() {
+        return deltas
+    }
+
     static ext(ast) {
         var lastNodefunc
         var ispromisefunc
@@ -82,6 +94,11 @@ class NoPromiseRule {
                             "raw": node.arguments[0].raw
                         }
                     }
+                    deltas.push({
+                        start: node.loc.start.line,
+                        end: node.loc.end.line,
+                        description: deltaDescEnum.resolve
+                    })
 
                     return returnStatement
                 // reject
@@ -99,6 +116,12 @@ class NoPromiseRule {
                             "arguments": node.arguments
                         }
                     }
+
+                    deltas.push({
+                        start: node.loc.start.line,
+                        end: node.loc.end.line,
+                        description: deltaDescEnum.reject
+                    })
 
                     return throwStatement 
                 }
@@ -122,6 +145,12 @@ class NoPromiseRule {
                         indexOfPromiseBody = undefined
                         promiseBody = undefined
 
+                        deltas.push({
+                            start: node.loc.start.line,
+                            end: node.loc.end.line,
+                            description: deltaDescEnum.async
+                        })
+
                         return node
                     }
                 }
@@ -144,6 +173,12 @@ class NoPromiseRule {
                                 "arguments": node.arguments
                             }
                         }
+                        
+                        deltas.push({
+                            start: node.loc.start.line,
+                            end: node.loc.end.line,
+                            description: deltaDescEnum.await
+                        })
                         // console.log(node.callee.type);
                         // console.log(node.callee.name);
                         // console.log(node.arguments);
@@ -179,11 +214,18 @@ class NoPromiseRule {
                                 "arguments": node.arguments
                             }
                         }
+
+                        deltas.push({
+                            start: node.loc.start.line,
+                            end: node.loc.end.line,
+                            description: deltaDescEnum.await
+                        })
+
                         return awaitStatement
                     }
                 }
             })
-            console.log(element);
+            //console.log(element);
             result.push(obj)
         });
 
