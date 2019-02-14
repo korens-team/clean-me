@@ -16,7 +16,7 @@ const magicNumbers = require('./rules/magicNumbers')
 const encapsulateConditions = require('./rules/encapsulateConditions')
 
 let deltas = [];
-
+let afterCode = ""
 const init = () => {
     console.log(
       chalk.green(
@@ -84,7 +84,7 @@ const run = (filePath, options) => {
           }
       });
       
-      const afterCode = codegen.generate(ast, {
+      afterCode = codegen.generate(ast, {
        /*format: {
           preserveBlankLines: true
         },
@@ -106,4 +106,8 @@ const run = (filePath, options) => {
       return deltas;
   }
 
-  module.exports = {run, getDeltas};
+  const getAfterCode = () => {
+    return afterCode
+  }
+
+  module.exports = {run, getDeltas, getAfterCode};
