@@ -19,18 +19,34 @@ class NoPromiseRule {
         return nodesToReturn
     }
 
-    static getUsersNodes(noder) {
-        let nodesToReturn = [];
+    static replaceThens(noder) {        
         noder = estraverse.replace(noder, {
             enter: (node, parent) => {
-                if (node && node.type === 'CallExpression' &&
-                    node.callee && node.callee.property && node.callee.property.name === 'then') {
-                    nodesToReturn.push(node);
-                }
+                if (node && node.type=== 'ExpressionStatement' &&
+                    node.expression.type === 'CallExpression' &&
+                    node.expression.callee && node.expression.callee.property && node.expression.callee.property.name === 'then') {
+                    let newVarDec = node.expression.arguments[0].params[0]
+                    let newLogicNode = node.expression.arguments[0].body.body
+                    
+                    let varDevNode = {
+                        type: "VariableDeclaration",
+                        declarations: [
+                            {
+                                type: "VariableDeclarator",
+                                id: newVarDec,
+                                init: node.expression.callee.object
+                            }                            
+                        ],
+                        kind: "const"
+                    }
+                    
+                    parent.body.splice(parent.body.indexOf(node) + 1, 0, ...newLogicNode)                    
+                    parent.body[parent.body.indexOf(node)] = varDevNode
+                }                
             }
         })
 
-        return nodesToReturn
+        return noder
     }
 
 
@@ -295,132 +311,8 @@ class NoPromiseRule {
     }
 
     static apply(ast) {
-        return this.ext(ast)
-        let modifiedAst;
-
-        /// Promise creator
-
-        let promiseNodes
-        let promiseContainingFunctionNode
-        let promiseInnerBlockStatementNode
-        let promiseFunctionCallsNodesInPromise
-        let resolveNode
-        let rejectNode
-
-        let promiseCreatorArray = []
-        let promiseCreatorArrayTemplate = {
-            promiseContainingFunctionNode,
-            promiseInnerBlockStatementNode,
-            promiseFunctionCallsNodesInPromise,
-            resolveNode,
-            rejectNode,
-        }
-
-        // Array
-        promiseNodes = this.getPromiseNodes(ast);
-
-        // iterate through the array
-        promiseNodes.forEach((promiseNode, index) => {
-
-            console.log(`Going through promise #${index + 1}`);
-
-            // console.log();
-
-            promiseCreatorArrayTemplate.promiseContainingFunctionNode = this.getContainingFunctionNode(ast, promiseNode);
-
-            //console.log(codegen.generate(promiseCreatorArrayTemplate.promiseContainingFunctionNode));
-            // console.log('Containing function location', promiseContainingFunctionNode);
-
-            // console.log();
-
-            promiseCreatorArrayTemplate.promiseInnerBlockStatementNode = promiseNode.arguments[0].body;
-            // console.log('Inner block statement node', promiseInnerBlockStatementNode);
-
-            // console.log();
-
-            // Array. type 'CallExpression' not resolve/reject
-            promiseCreatorArrayTemplate.promiseFunctionCallsNodesInPromise = this.getFunctionCallsNodesInPromise(promiseNode);
-            // console.log('Function calls location in the promise', promiseFunctionCallsLocationInPromise);
-
-            // console.log();
-
-            // resolve location inside the promise declaration
-            promiseCreatorArrayTemplate.resolveNode = this.getResolveNode(promiseNode);
-            //console.log('Resolve Node', promiseCreatorArrayTemplate.resolveNode);
-
-            // console.log();
-
-            // reject location inside the promise declaration
-            promiseCreatorArrayTemplate.rejectNode = this.getRejectNode(promiseNode);
-            // console.log('Reject location', rejectLocation);
-
-            promiseCreatorArray[index] = promiseCreatorArrayTemplate
-
-            // clean template
-            promiseCreatorArrayTemplate = {
-                promiseContainingFunctionNode,
-                promiseInnerBlockStatementNode,
-                promiseFunctionCallsNodesInPromise,
-                resolveNode,
-                rejectNode,
-            }
-        });
-
-        //console.log(promiseCreatorArray);
-
-        // promiseCreatorArray.forEach(promiseCreator => {
-        //     estraverse.replace promiseCreator.promiseContainingFunctionNode
-        // });
-
-        /// Promise user
-
-        let usersNodes // Array
-        let userContainingFunctionNode
-        let userFunctionToInvokeNode // the func invoked the promise. func name + args
-        let userThenParamName
-        let userInnerBlockStatementNode // the logic inside the then
-
-        let promiseUserArray = []
-        let promiseUserArrayTemplate = {
-            userContainingFunctionNode,
-            userFunctionToInvokeNode,
-            userThenParamName,
-            userInnerBlockStatementNode,
-        }
-
-        usersNodes = this.getUsersNodes(ast)
-
-        usersNodes.forEach((usersNode, index) => {
-            console.log(`Going through user #${index + 1}`);
-
-            promiseUserArrayTemplate.userContainingFunctionNode = this.getContainingFunctionNode(ast, usersNode)
-            //console.log(userContainingFunctionNode); // if undefined - global scope
-
-            promiseUserArrayTemplate.userFunctionToInvokeNode = this.getUserFunctionToInvokeNode(usersNode)
-            //console.log(userFunctionToInvokeNode);
-
-            promiseUserArrayTemplate.userThenParamName = usersNode.arguments[0].params[0].name
-            //console.log('then param name is:', userThenParamName);
-
-            promiseUserArrayTemplate.userInnerBlockStatementNode = usersNode.arguments[0].body
-            // console.log('user inner block statement node:', userInnerBlockStatementNode);
-
-            promiseUserArray[index] = promiseUserArrayTemplate
-
-            // clean template
-            promiseUserArrayTemplate = {
-                userContainingFunctionNode,
-                userFunctionToInvokeNode,
-                userThenParamName,
-                userInnerBlockStatementNode,
-            }
-        });
-
-        //console.log(promiseUserArray);
-
-
-
-        return ast;
+        ast = this.ext(ast)
+        return this.replaceThens(ast)        
     }
 }
 
