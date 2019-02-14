@@ -96,4 +96,4 @@ const run = (filePath, options) => {
       });
   };
 
-  module.exports = run;
+  module.exports = {run};

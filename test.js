@@ -1,3 +1,3 @@
-const runner = require('./runner');
+const {run} = require('./runner');
 
-runner.run("examples/example.js", ["-namingConventions", "-noMagicNumbers"]);
+run("examples/example.js", ["-namingConventions", "-noMagicNumbers"]);
