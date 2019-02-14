@@ -2,6 +2,7 @@ const estraverse = require("estraverse")
 const codegen = require("escodegen")
 
 const funcsNames = []
+const deltas = []
 
 class NoPromiseRule {
 
@@ -33,6 +34,10 @@ class NoPromiseRule {
         return nodesToReturn
     }
 
+
+    static getAllDeltas() {
+        return deltas
+    }
 
     static ext(ast) {
         var lastNodefunc
