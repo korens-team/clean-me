@@ -9,7 +9,7 @@ class magicNumbers {
 
     static apply(ast) {
         
-        var deltas = this.deltas
+       
         
         estraverse.traverse(ast, {
             enter: (node, parent) => {
@@ -25,13 +25,7 @@ class magicNumbers {
                 if(parent && parent.type != "VariableDeclarator" && node.type == "Literal"){
                  //  console.log(node)
                     //console.log(this.getVarSuggestion())
-                    let delta = {
-                        start:node.loc.start.line,
-                        end:node.loc.end.line,
-                        description:"Magic numbers is a bad practice. You should always use constants instead of numbers in your code."
-                    }
-
-                    deltas.push(delta)
+                   
                     // console.log(chalk.red("You have a magic number on row " + node.loc.start.line + " at column " + node.loc.start.column))
                 }
             },
@@ -59,6 +53,8 @@ magicNumbers.replace = function(ast){
     var parents = []
      var varFuncCall = this.getVarSuggestion
      var lastVar
+     
+      var deltas = this.deltas
     result = estraverse.replace(ast,{
         enter: function(node,parent){
             var v = undefined
@@ -72,6 +68,15 @@ magicNumbers.replace = function(ast){
             if(parent && (parent.type != "VariableDeclarator" && parent.type != "Property") && node.type == "Literal"){
                 //console.log(parents))
                 lastVar = varFuncCall()
+                
+                 let delta = {
+                        start:node.loc.start.line,
+                        end:node.loc.end.line,
+                        description:"Magic numbers is a bad practice. You should always use constants instead of numbers in your code."
+                    }
+
+                    deltas.push(delta)
+                
                 obj = {
                     name:lastVar,
                     value:node.value
