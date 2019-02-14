@@ -8,7 +8,8 @@ const deltaDescEnum = {
     resolve: 'Using of resolve in promise. Return the value instead.',
     reject: 'Using of reject in promise. Throw an error instead.',
     async: 'Use async function instead of Promise and when invoking functions with the "await" keyword.',
-    await: 'Use await <func name> when resolving async function.'
+    await: 'Use await <func name> when resolving async function.',
+    then: 'Using "then" is old fashioned, we should prevent callback hells.'
 }
 
 class NoPromiseRule {
@@ -27,6 +28,37 @@ class NoPromiseRule {
         return nodesToReturn
     }
 
+    static checkIfContainsAwait(noder) {
+        let hasAwait = false
+        estraverse.traverse(noder, {
+            enter: function(node, parent) {
+                if (node.type === "AwaitExpression") {
+                    hasAwait = true
+                    this.break()
+                }
+            }
+        })
+
+        return hasAwait
+    }
+    
+    static addAsync(ast) {
+        ast = estraverse.replace(ast, {
+            enter: (node, parent) => {
+                if(node.type === 'FunctionDeclaration' && this.checkIfContainsAwait(node)) {
+                    node.async = true
+                    deltas.push({
+                        start: node.loc.start.line,
+                        end: node.loc.end.line,
+                        description: deltaDescEnum.async
+                    })
+                }
+            }
+        })
+
+        return ast
+    }
+
     static replaceThens(noder) {        
         noder = estraverse.replace(noder, {
             enter: (node, parent) => {
@@ -35,7 +67,7 @@ class NoPromiseRule {
                     node.expression.callee && node.expression.callee.property && node.expression.callee.property.name === 'then') {
                     let newVarDec = node.expression.arguments[0].params[0]
                     let newLogicNode = node.expression.arguments[0].body.body
-                    
+
                     let varDevNode = {
                         type: "VariableDeclaration",
                         declarations: [
@@ -50,6 +82,12 @@ class NoPromiseRule {
                     
                     parent.body.splice(parent.body.indexOf(node) + 1, 0, ...newLogicNode)                    
                     parent.body[parent.body.indexOf(node)] = varDevNode
+                    
+                    deltas.push({
+                        start: node.loc.start.line,
+                        end: node.loc.end.line,
+                        description: deltaDescEnum.then
+                    })
                 }                
             }
         })
@@ -160,7 +198,6 @@ class NoPromiseRule {
                     node.callee && node.callee.name !== 'reject' &&
                     node.callee.type !== 'MemberExpression' && parent.type !== 'AwaitExpression') {
                     
-                    //console.log(parent);
                     if (funcsNames.includes(node.callee.name)) {
                         let awaitStatement = {
                             "type": "AwaitExpression",
@@ -179,17 +216,13 @@ class NoPromiseRule {
                             end: node.loc.end.line,
                             description: deltaDescEnum.await
                         })
-                        // console.log(node.callee.type);
-                        // console.log(node.callee.name);
-                        // console.log(node.arguments);
+                        
                         return awaitStatement
-                        //console.log(awaitStatement);
                     }            
                 }    
             }
         })
 
-        //console.log(result);
         return result
     }
 
@@ -268,18 +301,6 @@ class NoPromiseRule {
             })
 
             return result2
-            // estraverse.traverse(ast, {
-            //     enter: (node, parent) => {
-            //         if (node && nodeToSearch && node.loc == nodeToSearch.loc) {                
-            //             if (node.type === 'FunctionDeclaration') {
-            //                 containingFunctionLocation = node
-            //                 console.log('ASYNC', node.async);
-            //             } else {
-            //                 recursion(ast, parent)
-            //             }
-            //         }
-            //     }
-            // })
         }
 
         estraverse.traverse(ast, {
@@ -354,7 +375,8 @@ class NoPromiseRule {
 
     static apply(ast) {
         ast = this.ext(ast)
-        return this.replaceThens(ast)        
+        ast = this.replaceThens(ast)
+        return this.addAsync(ast)
     }
 }
 
