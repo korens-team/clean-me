@@ -28,15 +28,16 @@ function createFile(name, temp) {
 
   function promiser(){
       return new Promise(function(resolve, reject){
-        if(true) {
-          resolve('true')
+        let abc = true
+        if(abc) {
+          resolve(abc)
         } else {
-          reject('err')
+          reject(abc)
         }
       });
   }
 
-  promiser().then(function(value){
-      var num = value + 1
-      console.log(num);
-  })
+  // promiser().then(function(value){
+  //     var num = value + value
+  //     console.log(num);
+  // })

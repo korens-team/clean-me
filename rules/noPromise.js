@@ -116,11 +116,7 @@ class NoPromiseRule {
                     node.callee && node.callee.name === 'resolve') {
                     let returnStatement = {
                         "type": "ReturnStatement",
-                        "argument": {
-                            "type": node.arguments[0].type,
-                            "value": node.arguments[0].value,
-                            "raw": node.arguments[0].raw
-                        }
+                        "argument": node.arguments[0]
                     }
 
                     deltas.push({
