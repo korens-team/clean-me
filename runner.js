@@ -53,31 +53,32 @@ const run = (filePath, options) => {
         switch(option) {
             case(rulesEnum.noMagicNumbers):{
               ast = magicNumbers.apply(ast)
-              deltas.push(magicNumbers.getAllDeltas())
+              deltas.push(...magicNumbers.getAllDeltas())
               break
             }
             case(rulesEnum.namingConventions): {
                 ast = namingConventions.apply(ast)
-                deltas.push(namingConventions.getAllDeltas())
+                deltas.push(...namingConventions.getAllDeltas())
                 break
             }
             case(rulesEnum.noFlagArgs): {
               ast = noFlagArgs.apply(ast)
-              deltas.push(noFlagArgs.getAllDeltas())
+              deltas.push(...noFlagArgs.getAllDeltas())
               break
             }
             case(rulesEnum.noSideEffects): {
               ast = sideEffects.apply(ast)
-              deltas.push(sideEffects.getAllDeltas())
+              deltas.push(...sideEffects.getAllDeltas())
               break
             }
             case(rulesEnum.noPromise): {
               ast = noPromiseRule.apply(ast)
+              deltas.push(...noPromiseRule.getAllDeltas())
               break
             }
             case(rulesEnum.encapsulateConditions):{
               ast = encapsulateConditions.apply(ast)
-              deltas.push(encapsulateConditions.getAllDeltas())
+              deltas.push(...encapsulateConditions.getAllDeltas())
               break
             }
           }
