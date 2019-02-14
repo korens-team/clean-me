@@ -13,18 +13,8 @@ const deltaDescEnum = {
 
 class NoPromiseRule {
 
-    static getPromiseNodes(noder) {
-        let nodesToReturn = [];
-        estraverse.traverse(noder, {
-            enter: (node, parent) => {
-                if (node && node.type === 'NewExpression' &&
-                    node.callee && node.callee.name === 'Promise') {
-                    nodesToReturn.push(node);
-                }
-            }
-        })
-
-        return nodesToReturn
+    static getAllDeltas() {
+        return deltas
     }
 
     static checkIfContainsAwait(noder) {
@@ -94,33 +84,34 @@ class NoPromiseRule {
         return noder
     }
 
-
-    static getAllDeltas() {
-        return deltas
-    }
-
-    static ext(ast) {
+    static mainLogic(ast) {
+        
+        // flags etc
         var lastNodefunc
-        var ispromisefunc
+        var isPromiseFunc
         var indexOfPromiseBody
         var promiseBody
+
+        // functions
         var addAwaitToPromise = this.addAwaitToPromiseBody
         var insrtPromiseBodyToMain = this.insertPromiseBodyToMainBody
+
+        // traverse and check conditions
         var result = estraverse.replace(ast, {
             enter: function (node, parent) {
-                // if(node.type === 'AwaitExpression') {
-                //     console.log(node);
-                // }
-                // change promise containing func to async
+                // get last node that is a function declaration
                 if (node.type == 'FunctionDeclaration') {
                     lastNodefunc = node
                 }
+                // get the node that is a Promise declaration
                 if (node.type == 'NewExpression' && node.callee.name == 'Promise') {
-                    ispromisefunc = true
+                    isPromiseFunc = true
+                    // index of promise body in the containing function body
                     indexOfPromiseBody = lastNodefunc.body.body.indexOf(parent);
+                    // get the promise body                    
                     promiseBody = node.arguments[0].body.body
                 }
-                // resolve
+                // handle 'resolve' situations, switch it to return statement
                 else if (node && node.type === 'CallExpression' &&
                     node.callee && node.callee.name === 'resolve') {
                     let returnStatement = {
@@ -131,6 +122,7 @@ class NoPromiseRule {
                             "raw": node.arguments[0].raw
                         }
                     }
+
                     deltas.push({
                         start: node.loc.start.line,
                         end: node.loc.end.line,
@@ -138,7 +130,8 @@ class NoPromiseRule {
                     })
 
                     return returnStatement
-                // reject
+
+                // handle 'reject' situations, throw an error instead
                 } else if (node && node.type === 'CallExpression' &&
                     node.callee && node.callee.name === 'reject') {
                     
@@ -163,21 +156,25 @@ class NoPromiseRule {
                     return throwStatement 
                 }
             },
+
             leave: function (node, parent) {
+                // check if the current node is the last function declaration node we saved
                 if (JSON.stringify(node) == JSON.stringify(lastNodefunc)) {
-                    if (ispromisefunc) {
+                    if (isPromiseFunc) {
                         // change promise containing func to async
                         node.async = true
-                        if(node.id.name) {
+
+                        // save the func name in order to check if should add await before invoking it
+                        if (node.id.name) {
                             funcsNames.push(node.id.name)
                         }
-                        
-                        // console.log(indexOfPromiseBody);
-                        // console.log(promiseBody);
+
                         promiseBody = addAwaitToPromise(promiseBody)
+
                         node.body.body = insrtPromiseBodyToMain(node.body.body, indexOfPromiseBody, promiseBody)
 
-                        ispromisefunc = false
+                        // back to init state
+                        isPromiseFunc = false
                         lastNodefunc = undefined
                         indexOfPromiseBody = undefined
                         promiseBody = undefined
@@ -191,12 +188,14 @@ class NoPromiseRule {
                         return node
                     }
                 }
-                // func calls in the promise, add await
+
+                // add await to promise function invokation
                 if (node && node.type === 'CallExpression' &&
                     node.callee && node.callee.name !== 'resolve' &&
                     node.callee && node.callee.name !== 'reject' &&
                     node.callee.type !== 'MemberExpression' && parent.type !== 'AwaitExpression') {
                     
+                    // if func name is in promise names list
                     if (funcsNames.includes(node.callee.name)) {
                         let awaitStatement = {
                             "type": "AwaitExpression",
@@ -224,7 +223,6 @@ class NoPromiseRule {
 
         return result
     }
-
 
     static addAwaitToPromiseBody(promiseBody) {
         var result = []
@@ -257,7 +255,7 @@ class NoPromiseRule {
                     }
                 }
             })
-            //console.log(element);
+
             result.push(obj)
         });
 
@@ -280,100 +278,10 @@ class NoPromiseRule {
         }
         
         return result;
-    }
-
-    static getContainingFunctionNode(ast, noder) {
-        let containingFunctionLocation
-
-        let result
-
-        function recursion(ast, nodeToSearch) {
-            let result2 = estraverse.replace(ast, {
-                enter: (node, parent) => {
-                    if (node && nodeToSearch && node.loc == nodeToSearch.loc) {
-                        node.async = 'true'
-                        return node
-                    } else {
-                        recursion(ast, parent)
-                    }
-                }
-            })
-
-            return result2
-        }
-
-        estraverse.traverse(ast, {
-            enter: (node, parent) => {
-                if (node && noder && node.loc == noder.loc) {
-                    result = recursion(ast, parent)
-                }
-            }
-        })
-        return result
-        //return containingFunctionLocation
-    }
-
-    static getFunctionCallsNodesInPromise(noder) {
-        let functionsLocArray = [];
-        estraverse.traverse(noder, {
-            enter: (node, parent) => {
-                if (node && node.type === 'CallExpression' &&
-                    node.callee && node.callee.name !== 'resolve' &&
-                    node.callee && node.callee.name !== 'reject') {
-                    functionsLocArray.push(node);
-                }
-            }
-        })
-
-        return functionsLocArray;
-    }
-
-    static getResolveNode(noder) {
-        let resolveNode;
-        estraverse.traverse(noder, {
-            enter: (node, parent) => {
-                if (node && node.type === 'CallExpression' &&
-                    node.callee && node.callee.name === 'resolve') {
-                    resolveNode = node;
-                }
-            }
-        })
-
-        return resolveNode;
-    }
-
-    static getRejectNode(noder) {
-        let rejectNode;
-        estraverse.traverse(noder, {
-            enter: (node, parent) => {
-                if (node && node.type === 'CallExpression' &&
-                    node.callee && node.callee.name === 'reject') {
-
-                    rejectNode = node;
-                }
-            }
-        })
-
-        return rejectNode;
-    }
-
-    static getUserFunctionToInvokeNode(noder) {
-        let nodeToRet
-        estraverse.traverse(noder, {
-            enter: (node, parent) => {
-                if (node && node.type === 'CallExpression' &&
-                    node.callee && node.callee.object && node.callee.object.type === 'CallExpression') {
-
-                    nodeToRet = node.callee.object
-                }
-            }
-        })
-
-        return nodeToRet;
-    }
+    }    
 
     static apply(ast) {
-        ast = this.ext(ast)
+        ast = this.mainLogic(ast)
         ast = this.replaceThens(ast)
         return this.addAsync(ast)
     }
