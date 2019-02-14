@@ -68,14 +68,15 @@ magicNumbers.replace = function(ast){
             if(parent && (parent.type != "VariableDeclarator" && parent.type != "Property") && node.type == "Literal"){
                 //console.log(parents))
                 lastVar = varFuncCall()
-                
+                if (node.loc) {
                  let delta = {
-                        start:node.loc.start.line,
-                        end:node.loc.end.line,
+                        start: node.loc.start.line,
+                        end: node.loc.end.line,
                         description:"Magic numbers is a bad practice. You should always use constants instead of numbers in your code."
                     }
 
                     deltas.push(delta)
+                }
                 
                 obj = {
                     name:lastVar,
