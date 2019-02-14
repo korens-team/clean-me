@@ -27,9 +27,15 @@ function createFile(name, temp) {
 
 
   function promiser(){
-      return new Promise(function(res, reject){});
+      return new Promise(function(resolve, reject){
+        if(true) {
+          resolve('true')
+        } else {
+          reject('err')
+        }
+      });
   }
 
-  promiser.then(function(value){
+  promiser().then(function(value){
       console.log(value);
   })
