@@ -22,7 +22,7 @@ class NamingConventions {
 
         estraverse.traverse(syntaxTree, {
             enter: (node, parent) => {
-                if(node.loc.start){
+                if(node.loc){
                     if(node.type == VariableDeclaration_type){
                         declerationsArray[index] = {
                             "kind": node.kind,
@@ -60,9 +60,9 @@ class NamingConventions {
         declerationsArray.forEach((declerationObj)=>{
             if(!CamelCase_Regex.test(declerationObj.name)){
                 if(!(declerationObj.valueType == Literal_type && declerationObj.kind == "const" && SnakeCase_Regex.test(declerationObj.name))){
-                    console.log(chalk.red("Use camelCase for vars declerations, row: " + declerationObj.row + " value: " + declerationObj.name));
+                    // console.log(chalk.red("Use camelCase for vars declerations, row: " + declerationObj.row + " value: " + declerationObj.name));
                     declerationObj.newName = _.camelCase(declerationObj.name);
-                    console.log("Use " + declerationObj.newName + " instead");
+                    // console.log("Use " + declerationObj.newName + " instead");
                     codeErrors.push({
                         start: declerationObj.row,
                         end: declerationObj.row,
@@ -72,9 +72,9 @@ class NamingConventions {
             }
 
             if(declerationObj.valueType == Literal_type && declerationObj.kind == "const" && !SnakeCase_Regex.test(declerationObj.name.toLowerCase())){
-                console.log(chalk.red("use SNAKE_CASE for const numbers, row: " + declerationObj.row + " value: " + declerationObj.name));
+                // console.log(chalk.red("use SNAKE_CASE for const numbers, row: " + declerationObj.row + " value: " + declerationObj.name));
                 declerationObj.newName = _.snakeCase(declerationObj.name).toUpperCase();
-                console.log("Use " + declerationObj.newName + " instead");
+                // console.log("Use " + declerationObj.newName + " instead");
                 codeErrors.push({
                     start: declerationObj.row,
                     end: declerationObj.row,
@@ -85,7 +85,7 @@ class NamingConventions {
 
         const newTree = estraverse.replace(syntaxTree, {
             enter: (node) => {
-                if(node.loc.start && (node.type == VariableDeclarator_type || node.type == FunctionDeclaration_type){
+                if(node.loc && (node.type == VariableDeclarator_type || node.type == FunctionDeclaration_type)){
                     const newNode = declerationsArray.find((declerationObj) => {
                         return declerationObj.row == node.loc.start.line &&
                             declerationObj.column == node.loc.start.column;

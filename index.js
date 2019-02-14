@@ -53,20 +53,22 @@ const run = () => {
           switch(val) {
             case(rulesEnum.noMagicNumbers):{
               ast = magicNumbers.apply(ast)
+              deltas.push(magicNumbers.getAllDeltas())
               break
             }
             case(rulesEnum.namingConventions): {
                 ast = namingConventions.apply(ast)
+                deltas.push(namingConventions.getAllDeltas())
                 break
             }
             case(rulesEnum.noFlagArgs): {
               ast = noFlagArgs.apply(ast)
-              noFlagArgs.getAllDeltas()
+              deltas.push(noFlagArgs.getAllDeltas())
               break
             }
             case(rulesEnum.noSideEffects): {
               ast = sideEffects.apply(ast)
-              sideEffects.getAllDeltas()
+              deltas.push(sideEffects.getAllDeltas())
               break
             }
             case(rulesEnum.noPromise): {
@@ -75,6 +77,7 @@ const run = () => {
             }
             case(rulesEnum.encapsulateConditions):{
               ast = encapsulateConditions.apply(ast)
+              deltas.push(encapsulateConditions.getAllDeltas())
               break
             }
           }
@@ -93,8 +96,9 @@ const run = () => {
         if(err) {
           return console.log(err);
         }
-  
+
         console.log("The file was saved!");
+        console.log(deltas)
       });
   };
   

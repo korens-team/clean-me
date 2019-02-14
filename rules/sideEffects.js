@@ -9,12 +9,6 @@ class SideEffectRule {
         const problematicFunctions = this.getProblematicFunctions(ast, functions)
         const problematicFunctionsNames = problematicFunctions.map((p) => p.name)
 
-        //console.log("functions")
-        //console.log(functions)
-        //console.log(problematicFunctions)
-        //console.log(problematicFunctions[1].problems)        
-
-        // replace param assignment to return statements
         const newAst = estraverse.replace(ast, {
             enter: (node, parent) => {
                 let nodeToReplaceFunction
@@ -89,7 +83,6 @@ SideEffectRule.getProblematicFunctions = function(ast, functions) {
 }
 
 SideEffectRule.getProblematicParams = function(functionNode, func) {
-    let problems = []
     let params = []
     estraverse.traverse(functionNode, {
         enter: (node) => {            
@@ -98,16 +91,11 @@ SideEffectRule.getProblematicParams = function(functionNode, func) {
                 node.expression.type === "AssignmentExpression" &&
                 func.params.includes(node.expression.left.name)) {
 
-                let problem = node.expression.left.name + 
-                              " is assigned but is a parameter in the function\n"
-
-                problems.push(problem)
-
-                params.push({
+                params.push(/*{
                     name: node.expression.left.name,
                     value: node.expression.right.value,
                     type: node.expression.right.type
-                })
+                }*/node.expression)
 
                 deltas.push({
                     start: node.loc.start.line,
@@ -117,7 +105,7 @@ SideEffectRule.getProblematicParams = function(functionNode, func) {
             }
         }
     })
-    //console.log(problems)
+    
     return params
 }
 
@@ -131,17 +119,13 @@ SideEffectRule.replaceParamAssigment = function(func) {
                node.type === "ExpressionStatement" &&
                node.expression.type === "AssignmentExpression") {
 
-                const paramIndex = func.problems.map((p) => p.name).indexOf(node.expression.left.name)
+                const paramIndex = func.problems.map((p) => p.left.name).indexOf(node.expression.left.name)
                 if (paramIndex !== -1) {
                     if (paramsLength == 1) {
                         const param = func.problems[paramIndex]
                         nodeToReplaceExpression = {
                             "type": "ReturnStatement",
-                            "argument": {
-                                "type": "Literal",
-                                "value": param.value,
-                                "raw": param.value
-                            }
+                            "argument": param.right
                         }
 
                         return nodeToReplaceExpression
@@ -149,13 +133,13 @@ SideEffectRule.replaceParamAssigment = function(func) {
                 }
             }
 
-            if (paramsLength > 1 && !didReplaceMultiple) {
+            /*if (paramsLength > 1 && !didReplaceMultiple) {
                 body = this.replaceMultipleParamAssignment(func)       
                 nodeToReplaceExpression = node
                 nodeToReplaceExpression.body.body = [body]
                 didReplaceMultiple = true
                 return nodeToReplaceExpression
-            }
+            }*/
         }
     })
 
@@ -167,8 +151,12 @@ SideEffectRule.replaceFunctionCall = function(func, node) {
     const paramsLength = func.problems.length
     
     nodeToReplace = (paramsLength === 1) 
-        ? this.generateSingleParamFunctionCall(func, node)
-        : this.generateMultipleParamsFunctionCall(func, node)
+        ? this.generateSingleParamFunctionCall(func, node): node;
+        //: this.generateMultipleParamsFunctionCall(func, node)
+
+    if (paramsLength === 1) {
+        this.generateSingleParamFunctionCall(func,node)
+    }
 
     return nodeToReplace
 }
@@ -210,7 +198,8 @@ SideEffectRule.replaceMultipleParamAssignment = function(func) {
 
 SideEffectRule.generateSingleParamFunctionCall = function(func, node) {
     const funcName = func.name
-    const paramName = func.problems[0].name
+    const paramName = func.problems[0]
+    
     const nodeToReplace = {
         "type": "ExpressionStatement",
         "expression": {
@@ -218,7 +207,7 @@ SideEffectRule.generateSingleParamFunctionCall = function(func, node) {
             "operator": "=",
             "left": {
                 "type": "Identifier",
-                "name": paramName
+                "name": paramName.left.name
             },
             "right": node.expression
         }
@@ -249,12 +238,12 @@ SideEffectRule.generateMultipleParamsFunctionCall = function(func, node) {
             "type": "Property",
             "key": {
                 "type": "Identifier",
-                "name": param.name
+                "name": param
             },
             "computed": false,
             "value": {
                 "type": "Identifier",
-                "name": param.name
+                "name": param
             },
             "kind": "init",
             "method": false,

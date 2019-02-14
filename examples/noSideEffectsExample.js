@@ -1,7 +1,7 @@
 function eliav(b) {
     const a = 111
     console.log(a)
-    b = 22
+    b = b + 1
 }
 
 let b = 1
