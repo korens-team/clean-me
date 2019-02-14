@@ -66,7 +66,7 @@ class noFlagArgs {
             })
         })
         
-        currentDeltas
+        return currentDeltas
     }
     
     static replaceCalls(syntaxTree) {

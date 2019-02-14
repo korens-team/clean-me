@@ -28,7 +28,7 @@ class magicNumbers {
                     let delta = {
                         start:node.loc.start.line,
                         end:node.loc.end.line,
-                        description:"koren with the big dick and is horney as fuck"
+                        description:"Magic numbers is a bad practice. You should always use constants instead of numbers in your code."
                     }
 
                     deltas.push(delta)
