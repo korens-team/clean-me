@@ -37,5 +37,6 @@ function createFile(name, temp) {
   }
 
   promiser().then(function(value){
-      console.log(value);
+      var num = value + 1
+      console.log(num);
   })
