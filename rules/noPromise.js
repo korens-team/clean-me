@@ -1,5 +1,4 @@
 const estraverse = require("estraverse")
-const codegen = require("escodegen")
 
 const funcsNames = []
 const deltas = []
