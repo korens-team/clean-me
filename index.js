@@ -73,6 +73,7 @@ const run = () => {
             }
             case(rulesEnum.noPromise): {
               ast = noPromiseRule.apply(ast)
+              deltas.push(noPromiseRule.getAllDeltas())
               break
             }
             case(rulesEnum.encapsulateConditions):{
