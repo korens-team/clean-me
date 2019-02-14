@@ -1,6 +1,8 @@
 const estraverse = require("estraverse")
 const codegen = require("escodegen")
 
+const funcsNames = []
+
 class NoPromiseRule {
 
     static getPromiseNodes(noder) {
@@ -19,7 +21,7 @@ class NoPromiseRule {
 
     static getUsersNodes(noder) {
         let nodesToReturn = [];
-        estraverse.traverse(noder, {
+        noder = estraverse.replace(noder, {
             enter: (node, parent) => {
                 if (node && node.type === 'CallExpression' &&
                     node.callee && node.callee.property && node.callee.property.name === 'then') {
@@ -37,12 +39,13 @@ class NoPromiseRule {
         var ispromisefunc
         var indexOfPromiseBody
         var promiseBody
-        var helperfunc = this.insertPromiseBodyToMainBody
+        var addAwaitToPromise = this.addAwaitToPromiseBody
+        var insrtPromiseBodyToMain = this.insertPromiseBodyToMainBody
         var result = estraverse.replace(ast, {
             enter: function (node, parent) {
-                if(node.type === 'AwaitExpression') {
-                    console.log(node);
-                }
+                // if(node.type === 'AwaitExpression') {
+                //     console.log(node);
+                // }
                 // change promise containing func to async
                 if (node.type == 'FunctionDeclaration') {
                     lastNodefunc = node
@@ -89,9 +92,14 @@ class NoPromiseRule {
                     if (ispromisefunc) {
                         // change promise containing func to async
                         node.async = true
+                        if(node.id.name) {
+                            funcsNames.push(node.id.name)
+                        }
+                        
                         // console.log(indexOfPromiseBody);
                         // console.log(promiseBody);
-                        node.body.body = helperfunc(node.body.body, indexOfPromiseBody, promiseBody)
+                        promiseBody = addAwaitToPromise(promiseBody)
+                        node.body.body = insrtPromiseBodyToMain(node.body.body, indexOfPromiseBody, promiseBody)
 
                         ispromisefunc = false
                         lastNodefunc = undefined
@@ -107,29 +115,62 @@ class NoPromiseRule {
                     node.callee && node.callee.name !== 'reject' &&
                     node.callee.type !== 'MemberExpression' && parent.type !== 'AwaitExpression') {
                     
-                    let awaitStatement = {
-                        "type": "AwaitExpression",
-                        "argument": {
-                            "type": "CallExpression",
-                            "callee": {
-                                "type": node.callee.type,
-                                "name": node.callee.name
-                            },
-                            "arguments": node.arguments
+                    //console.log(parent);
+                    if (funcsNames.includes(node.callee.name)) {
+                        let awaitStatement = {
+                            "type": "AwaitExpression",
+                            "argument": {
+                                "type": "CallExpression",
+                                "callee": {
+                                    "type": node.callee.type,
+                                    "name": node.callee.name
+                                },
+                                "arguments": node.arguments
+                            }
                         }
-                    }
-                    // console.log(node.callee.type);
-                    // console.log(node.callee.name);
-                    // console.log(node.arguments);
-                    return awaitStatement
-                    //console.log(awaitStatement);
-                
-            
+                        // console.log(node.callee.type);
+                        // console.log(node.callee.name);
+                        // console.log(node.arguments);
+                        return awaitStatement
+                        //console.log(awaitStatement);
+                    }            
                 }    
             }
         })
 
         //console.log(result);
+        return result
+    }
+
+
+    static addAwaitToPromiseBody(promiseBody) {
+        var result = []
+        promiseBody.forEach(element => {
+            var obj = estraverse.replace(element, {
+                enter: function(node, parent) {
+
+                },
+                leave: function(node, parent) {
+                    if(node.type == 'CallExpression') {
+                        let awaitStatement = {
+                            "type": "AwaitExpression",
+                            "argument": {
+                                "type": "CallExpression",
+                                "callee": {
+                                    "type": node.callee.type,
+                                    "name": node.callee.name
+                                },
+                                "arguments": node.arguments
+                            }
+                        }
+                        return awaitStatement
+                    }
+                }
+            })
+            console.log(element);
+            result.push(obj)
+        });
+
         return result
     }
 

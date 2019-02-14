@@ -8,6 +8,8 @@ function abd() {
 
 function prms(num) {
     var ad = 4
+    ab()
+    var a = ad()
     return new Promise(function (resolve, reject) {
         const ab = abc()
         if (num == 1) {
@@ -50,6 +52,9 @@ async function bla2() {
     } catch (err) {
         console.error(err);
     }
+
+
+    abd()
 }
 
 module.exports = prms
