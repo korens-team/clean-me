@@ -8,6 +8,7 @@ const VariableDeclarator_type = "VariableDeclarator";
 const Identifier_type = "Identifier";
 const CallExpression_type = "CallExpression";
 const Literal_type = "Literal";
+const NewExpression_type = "NewExpression";
 
 const CamelCase_Regex = /^[a-z]+([A-Z][a-z0-9]+)*$/;
 const SnakeCase_Regex = /^[A-Z]+(\_[A-Z0-9]+)*/;
@@ -44,7 +45,7 @@ class NamingConventions {
                         };
                         index++;
                     }
-                    if(node.type == Identifier_type && parent.type != VariableDeclarator_type && parent.type != FunctionDeclaration_type){
+                    if(node.type == Identifier_type && parent.type != VariableDeclarator_type && parent.type != FunctionDeclaration_type && parent.type != NewExpression_type){
                         declerationsArray[index] = {
                             "name": node.name,
                             "row": node.loc.start.line,
@@ -66,7 +67,7 @@ class NamingConventions {
                     codeErrors.push({
                         start: declerationObj.row,
                         end: declerationObj.row,
-                        description: "Use camelCase for vars declerations"
+                        description: "This name not stand for common naming convention, should be camelCase"
                     });
                 }
             }
@@ -78,7 +79,7 @@ class NamingConventions {
                 codeErrors.push({
                     start: declerationObj.row,
                     end: declerationObj.row,
-                    description: "Use camelCase for consts literals"
+                    description: "This name not stand for common naming convention, consts should be SNAKE_CASE"
                 });
             }
         });
