@@ -1,12 +1,11 @@
 import estraverse from "estraverse";
-import chalk from "chalk";
 import _ from "lodash";
 
-import IF_STATEMENT_TYPE from "consts/types";
-import LOGICAL_EXPRESSION_TYPE from "consts/types";
-import IDENTIFIER_TYPE from "/consts/types";
-import BINARY_EXPRESSION_TYPE from "/consts/types";
-import LITERAL_TYPE from "/consts/types";
+import {IF_STATEMENT_TYPE, 
+        LOGICAL_EXPRESSION_TYPE,
+        IDENTIFIER_TYPE,
+        BINARY_EXPRESSION_TYPE,
+        LITERAL_TYPE} from "./consts/types";
 
 const operationsMap = {
   ">": "grater",
