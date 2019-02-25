@@ -93,7 +93,7 @@ magicNumbers.replace = function(ast){
         }
     })
 
-   // console.log(result)
+   //console.log(result)
   // console.log(codegen.generate(result))
    return result
 }

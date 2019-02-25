@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "build": "babel src -d lib"
+    "build": "babel src -d lib",
+    "lint": "esw src --color",
+    "lint:watch": "npm run lint -- --watch"
   },
   "author": "",
   "license": "ISC",
@@ -28,6 +30,9 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.3.4"
+    "@babel/core": "^7.3.4",
+    "eslint": "3.8.1",
+    "eslint-plugin-import": "2.0.1",
+    "eslint-watch": "2.1.14"
   }
 }
