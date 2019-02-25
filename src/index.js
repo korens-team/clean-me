@@ -52,7 +52,7 @@ const run = () => {
         } else if(val == '-o'){
           const filePath = process.argv[index + 1];
           
-          const afterCode = codegen.generate(ast, {});
+          const afterCode = codegen.generate(ast);
      
            fs.writeFile(filePath, afterCode, function(err) {     
              if(err) {
@@ -63,41 +63,41 @@ const run = () => {
            });
         } else {
           switch(val) {
-            case(rulesEnum.noMagicNumbers):{
-              ast = magicNumbers.apply(ast)
-              deltas.push(...magicNumbers.getAllDeltas())
-              break
+            case(rulesEnum.noMagicNumbers): {
+              ast = magicNumbers.apply(ast);
+              deltas.push(...magicNumbers.getAllDeltas());
+              break;
             }
             case(rulesEnum.namingConventions): {
-                ast = namingConventions.apply(ast)
-                deltas.push(...namingConventions.getAllDeltas())
-                break
+                ast = namingConventions.apply(ast);
+                deltas.push(...namingConventions.getAllDeltas());
+                break;
             }
             case(rulesEnum.noFlagArgs): {
-              ast = noFlagArgs.apply(ast)
-              deltas.push(...noFlagArgs.getAllDeltas())
-              break
+              ast = noFlagArgs.apply(ast);
+              deltas.push(...noFlagArgs.getAllDeltas());
+              break;
             }
             case(rulesEnum.noSideEffects): {
-              ast = sideEffects.apply(ast)
-              deltas.push(...sideEffects.getAllDeltas())
-              break
+              ast = sideEffects.apply(ast);
+              deltas.push(...sideEffects.getAllDeltas());
+              break;
             }
             case(rulesEnum.noPromise): {
-              ast = noPromiseRule.apply(ast)
-              deltas.push(...noPromiseRule.getAllDeltas())
-              break
+              ast = noPromiseRule.apply(ast);
+              deltas.push(...noPromiseRule.getAllDeltas());
+              break;
             }
-            case(rulesEnum.encapsulateConditions):{
-              ast = encapsulateConditions.apply(ast)
-              deltas.push(...encapsulateConditions.getAllDeltas())
-              break
+            case(rulesEnum.encapsulateConditions): {
+              ast = encapsulateConditions.apply(ast);
+              deltas.push(...encapsulateConditions.getAllDeltas());
+              break;
             }
           }
         }
       });
       
-      console.log(chalk.red(deltas.reduce((newStr, str) => newStr += JSON.stringify(str) + '\n', "")))      
+      console.log(chalk.red(deltas.reduce((newStr, str) => newStr += JSON.stringify(str) + '\n', "")));   
   };
   
   run();
