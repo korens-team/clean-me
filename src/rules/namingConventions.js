@@ -15,7 +15,7 @@ const SnakeCase_Regex = /^[A-Z]+(\_[A-Z0-9]+)*/;
 
 const codeErrors = [];
 
-class NamingConventions {
+export default class NamingConventions {
   static apply(syntaxTree) {
     let declerationsArray = [];
     let index = 0;
@@ -29,7 +29,7 @@ class NamingConventions {
               row: node.loc.start.line
             };
           }
-          if (node.type == VARIABLE_DECLARATION_TYPE) {
+          if (node.type == VARIABLE_DECLARATION_TYPE && node.id && node.id.name) {
             declerationsArray[index].name = node.id.name;
             declerationsArray[index].valueType = node.init.type;
             declerationsArray[index].column = node.loc.start.column;
@@ -153,5 +153,3 @@ class NamingConventions {
     return codeErrors;
   }
 }
-
-module.exports = NamingConventions;

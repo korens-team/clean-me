@@ -1,103 +1,110 @@
 #!/usr/bin/env node
 
-const inquirer = require("inquirer");
-const chalk = require("chalk");
-const figlet = require("figlet");
-const fs =  require('fs'); 
-const esprima = require("esprima")
-const codegen = require("escodegen")
+import chalk from "chalk";
+import figlet from "figlet";
+import fs from "fs";
+import codegen from "escodegen";
+const esprima  = require("esprima");
 
-const rulesEnum = require('./rulesEnum')
-const noFlagArgs = require('./rules/noFlagArgs')
-const sideEffects = require('./rules/sideEffects')
-const noPromiseRule = require('./rules/noPromise')
-const namingConventions = require('./rules/namingConventions')
-const magicNumbers = require('./rules/magicNumbers')
-const encapsulateConditions = require('./rules/encapsulateConditions')
+import rulesEnum from "./rulesEnum";
+import noFlagArgs from "./rules/noFlagArgs";
+import sideEffects from "./rules/sideEffects";
+import noPromiseRule from "./rules/noPromise";
+import namingConventions from "./rules/namingConventions";
+import magicNumbers from "./rules/magicNumbers";
+import encapsulateConditions from "./rules/encapsulateConditions";
 
 const init = () => {
-    console.log(
-      chalk.green(
-        figlet.textSync("CleanMe", {
-          font: "",
-          horizontalLayout: "default",
-          verticalLayout: "default"
-        })
-      )
-    );
-  }
+  console.log(
+    chalk.green(
+      figlet.textSync("CleanMe", {
+        font: "",
+        horizontalLayout: "default",
+        verticalLayout: "default"
+      })
+    )
+  );
+};
 
 const run = () => {
-    init();
-    let ast
-    let code;
-    let deltas = [];
-    process.argv.forEach(function (val, index, array) {
-        if(val == '-f'){
-            const filePath = process.argv[index + 1];
-            if(filePath){
-              if (fs.existsSync(filePath)) {
-                code = fs.readFileSync(filePath, 'utf-8');                     
-                ast = esprima.parse(code, {
-                  raw: true,
-                  loc: true,
-                  range: true,
-                  comment: true,
-                  tokens: true
-                })
-              } else{
-                console.error("missing file input");
-              }
-            }
-        } else if(val == '-o'){
-          const filePath = process.argv[index + 1];
-          
-          const afterCode = codegen.generate(ast);
-     
-           fs.writeFile(filePath, afterCode, function(err) {     
-             if(err) {
-               return console.log(err);
-             }
-     
-             console.log("Output file generated.");
-           });
+  init();
+  let ast;
+  let code;
+  let deltas = [];
+  let outputFilePath;
+
+  process.argv.forEach(function(val, index) {
+    if (val == "-f") {
+      const filePath = process.argv[index + 1];
+      if (filePath) {
+        if (fs.existsSync(filePath)) {
+          code = fs.readFileSync(filePath, "utf-8");
+          ast = esprima.parse(code, {
+            raw: true,
+            loc: true,
+            range: true,
+            comment: true,
+            tokens: true
+          });
         } else {
-          switch(val) {
-            case(rulesEnum.noMagicNumbers): {
-              ast = magicNumbers.apply(ast);
-              deltas.push(...magicNumbers.getAllDeltas());
-              break;
-            }
-            case(rulesEnum.namingConventions): {
-                ast = namingConventions.apply(ast);
-                deltas.push(...namingConventions.getAllDeltas());
-                break;
-            }
-            case(rulesEnum.noFlagArgs): {
-              ast = noFlagArgs.apply(ast);
-              deltas.push(...noFlagArgs.getAllDeltas());
-              break;
-            }
-            case(rulesEnum.noSideEffects): {
-              ast = sideEffects.apply(ast);
-              deltas.push(...sideEffects.getAllDeltas());
-              break;
-            }
-            case(rulesEnum.noPromise): {
-              ast = noPromiseRule.apply(ast);
-              deltas.push(...noPromiseRule.getAllDeltas());
-              break;
-            }
-            case(rulesEnum.encapsulateConditions): {
-              ast = encapsulateConditions.apply(ast);
-              deltas.push(...encapsulateConditions.getAllDeltas());
-              break;
-            }
-          }
+          console.error("missing file input");
+          return;
         }
-      });
-      
-      console.log(chalk.red(deltas.reduce((newStr, str) => newStr += JSON.stringify(str) + '\n', "")));   
-  };
-  
-  run();
+      }
+    } else if (val == "-o") {
+      outputFilePath = process.argv[index + 1];
+    } else {
+      switch (val) {
+        case rulesEnum.noMagicNumbers:
+          ast = magicNumbers.apply(ast);
+          deltas.push(...magicNumbers.getAllDeltas());
+          break;
+
+        case rulesEnum.namingConventions:
+          ast = namingConventions.apply(ast);
+          deltas.push(...namingConventions.getAllDeltas());
+          break;
+
+        case rulesEnum.noFlagArgs:
+          ast = noFlagArgs.apply(ast);
+          deltas.push(...noFlagArgs.getAllDeltas());
+          break;
+
+        case rulesEnum.noSideEffects:
+          ast = sideEffects.apply(ast);
+          deltas.push(...sideEffects.getAllDeltas());
+          break;
+
+        case rulesEnum.noPromise:
+          ast = noPromiseRule.apply(ast);
+          deltas.push(...noPromiseRule.getAllDeltas());
+          break;
+
+        case rulesEnum.encapsulateConditions:
+          ast = encapsulateConditions.apply(ast);
+          deltas.push(...encapsulateConditions.getAllDeltas());
+          break;
+      }
+    }
+  });
+
+  if (outputFilePath) {
+    const afterCode = codegen.generate(ast);
+
+    fs.writeFile(outputFilePath, afterCode, function(err) {
+      if (err) {
+        return console.log(err);
+      }
+
+      console.log("Output file generated.");
+    });
+  }
+
+  console.log(
+    chalk.red(
+      deltas.reduce((newStr, str) => (newStr += JSON.stringify(str) + "\n"), "")
+    )
+  );
+};
+
+run();

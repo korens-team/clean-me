@@ -18,7 +18,7 @@ const operationsMap = {
 
 const codeErrors = [];
 
-class EncapsulateConditions {
+export default class EncapsulateConditions {
   static apply(syntaxTree) {
     let logicStatementsArray = [];
     let logicVars = [];
@@ -127,5 +127,3 @@ class EncapsulateConditions {
     return codeErrors;
   }
 }
-
-module.exports = EncapsulateConditions;

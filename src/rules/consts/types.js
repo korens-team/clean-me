@@ -7,3 +7,6 @@ export const VARIABLE_DECLARATION_TYPE = "VariableDeclaration";
 export const FUNCTION_DECLARATION_TYPE = "FunctionDeclaration";
 export const CALL_EXPRESSION_TYPE = "CallExpression";
 export const NEW_EXPRESSION_TYPE = "NewExpression";
+export const UNARY_EXPRESSION_TYPE = "UnaryExpression";
+export const EXPRESSION_STATEMENT_TYPE = "ExpressionStatement";
+export const BLOCK_STATEMENT_TYPE = "BlockStatement";
