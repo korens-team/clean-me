@@ -1,0 +1,10 @@
+export const IF_STATEMENT_TYPE = "IfStatement";
+export const LOGICAL_EXPRESSION_TYPE = "LogicalExpression";
+export const IDENTIFIER_TYPE = "Identifier";
+export const BINARY_EXPRESSION_TYPE = "BinaryExpression";
+export const LITERAL_TYPE = "Literal";
+export const VARIABLE_DECLARATION_TYPE = "VariableDeclaration";
+export const FUNCTION_DECLARATION_TYPE = "FunctionDeclaration";
+export const VARIABLE_DECLARATION_TYPE = "VariableDeclarator";
+export const CALL_EXPRESSION_TYPE = "CallExpression";
+export const NEW_EXPRESSION_TYPE = "NewExpression";

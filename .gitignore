@@ -101,3 +101,5 @@ typings/
 Settings
 
 after-file.js
+
+lib/*
