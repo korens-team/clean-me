@@ -1,6 +1,7 @@
 const estraverse = require("estraverse")
 const codegen = require("escodegen")
 const chalk = require("chalk");
+
 class magicNumbers {
 
     static getAllDeltas(){
@@ -8,40 +9,9 @@ class magicNumbers {
     }
 
     static apply(ast) {
-        
-       
-        
-        estraverse.traverse(ast, {
-            enter: (node, parent) => {
-          
-                
-              // console.log("node: " + node.type)
-              // if(parent)console.log("parent: " + parent.type)
-               
-                if(node.type == "Program" || node.type == "BlockStatement"){
-                    //parents.push(node.loc.start.line)
-                }
-                //if(parent)console.log("parent: " + parent.type)
-                if(parent && parent.type != "VariableDeclarator" && node.type == "Literal"){
-                 //  console.log(node)
-                    //console.log(this.getVarSuggestion())
-                   
-                    // console.log(chalk.red("You have a magic number on row " + node.loc.start.line + " at column " + node.loc.start.column))
-                }
-            },
-            leave: (node,parent) => {
-                if(node.type == "Program" || node.type == "BlockStatement"){
-                   // console.log(parents.pop())
-                }
-                
-            }
-        })
-        //this.replace(ast)
+    
         return this.replace(ast) 
-        //console.log(codegen.generate(result))
-       // console.log(parents)
     }
-
 }
 
 magicNumbers.v = "VAR_0"
@@ -118,7 +88,7 @@ magicNumbers.replace = function(ast){
                 node.body = [toAppend].concat(node.body)
                })
 
-        return node
+                return node
             }
         }
     })

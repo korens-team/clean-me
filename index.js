@@ -49,6 +49,18 @@ const run = () => {
                 console.error("missing file input");
               }
             }
+        } else if(val == '-o'){
+          const filePath = process.argv[index + 1];
+          
+          const afterCode = codegen.generate(ast, {});
+     
+           fs.writeFile(filePath, afterCode, function(err) {     
+             if(err) {
+               return console.log(err);
+             }
+     
+             console.log("Output file generated.");
+           });
         } else {
           switch(val) {
             case(rulesEnum.noMagicNumbers):{
@@ -85,22 +97,7 @@ const run = () => {
         }
       });
       
-      const afterCode = codegen.generate(ast, {
-       /*format: {
-          preserveBlankLines: true
-        },
-        //comment: true,
-        sourceCode: code*/
-      });
-
-      fs.writeFile("after-file.js", afterCode, function(err) {     
-        if(err) {
-          return console.log(err);
-        }
-
-        console.log("The file was saved!");
-        console.log(chalk.red(deltas.reduce((newStr, str) => newStr += JSON.stringify(str) + '\n', "")))
-      });
+      console.log(chalk.red(deltas.reduce((newStr, str) => newStr += JSON.stringify(str) + '\n', "")))      
   };
   
   run();
