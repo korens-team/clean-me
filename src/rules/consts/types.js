@@ -10,3 +10,7 @@ export const NEW_EXPRESSION_TYPE = "NewExpression";
 export const UNARY_EXPRESSION_TYPE = "UnaryExpression";
 export const EXPRESSION_STATEMENT_TYPE = "ExpressionStatement";
 export const BLOCK_STATEMENT_TYPE = "BlockStatement";
+export const ARROW_FUNCTION_EXPRESSION_TYPE = "ArrowFunctionExpression";
+export const PROGRAM_TYPE = "Program";
+export const VARIABLE_DECLARATOR_TYPE = "VariableDeclarator";
+export const PROPERTY_TYPE = "Property";

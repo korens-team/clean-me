@@ -4,12 +4,12 @@ import chalk from "chalk";
 import figlet from "figlet";
 import fs from "fs";
 import codegen from "escodegen";
+
 const esprima  = require("esprima");
 
 import rulesEnum from "./rulesEnum";
 import noFlagArgs from "./rules/noFlagArgs";
 import sideEffects from "./rules/sideEffects";
-import noPromiseRule from "./rules/noPromise";
 import namingConventions from "./rules/namingConventions";
 import magicNumbers from "./rules/magicNumbers";
 import encapsulateConditions from "./rules/encapsulateConditions";
