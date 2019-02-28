@@ -75,11 +75,6 @@ const run = () => {
           deltas.push(...sideEffects.getAllDeltas());
           break;
 
-        case rulesEnum.noPromise:
-          ast = noPromiseRule.apply(ast);
-          deltas.push(...noPromiseRule.getAllDeltas());
-          break;
-
         case rulesEnum.encapsulateConditions:
           ast = encapsulateConditions.apply(ast);
           deltas.push(...encapsulateConditions.getAllDeltas());
