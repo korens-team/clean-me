@@ -14,3 +14,6 @@ export const ARROW_FUNCTION_EXPRESSION_TYPE = "ArrowFunctionExpression";
 export const PROGRAM_TYPE = "Program";
 export const VARIABLE_DECLARATOR_TYPE = "VariableDeclarator";
 export const PROPERTY_TYPE = "Property";
+export const ASSIGNMENT_EXPRESSION_TYPE = "AssignmentExpression";
+export const OBJECT_EXPRESSION_TYPE = "ObjectExpression";
+export const RETURN_STATEMENT_TYPE = "ReturnStatement";

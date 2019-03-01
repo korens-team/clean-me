@@ -1,5 +1,5 @@
-const estraverse = require("estraverse");
-const _ = require("lodash");
+import estraverse from "estraverse";
+import _ from "lodash";
 
 import {
   VARIABLE_DECLARATION_TYPE,

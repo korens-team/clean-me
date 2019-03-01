@@ -1,4 +1,4 @@
-const estraverse = require("estraverse");
+import estraverse from "estraverse";
 
 import {
     BLOCK_STATEMENT_TYPE,
