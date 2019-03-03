@@ -5,9 +5,15 @@ import figlet from "figlet";
 import fs from "fs";
 import codegen from "escodegen";
 
-const esprima  = require("esprima");
+import { esprima } from "esprima";
 
-import rulesEnum from "./rulesEnum";
+import {
+  NAMING_CONVENTIONS,
+  NO_FLAG_ARGS,
+  NO_SIDE_EFFECTS,
+  NO_MAGIC_NUMBERS,
+  ENCAPSULATE_CONDITIONS
+} from "./rules/consts/rulesEnum";
 import noFlagArgs from "./rules/noFlagArgs";
 import sideEffects from "./rules/sideEffects";
 import namingConventions from "./rules/namingConventions";
@@ -55,27 +61,27 @@ const run = () => {
       outputFilePath = process.argv[index + 1];
     } else {
       switch (val) {
-        case rulesEnum.noMagicNumbers:
+        case NO_MAGIC_NUMBERS:
           ast = magicNumbers.apply(ast);
           deltas.push(...magicNumbers.getAllDeltas());
           break;
 
-        case rulesEnum.namingConventions:
+        case NAMING_CONVENTIONS:
           ast = namingConventions.apply(ast);
           deltas.push(...namingConventions.getAllDeltas());
           break;
 
-        case rulesEnum.noFlagArgs:
+        case NO_FLAG_ARGS:
           ast = noFlagArgs.apply(ast);
           deltas.push(...noFlagArgs.getAllDeltas());
           break;
 
-        case rulesEnum.noSideEffects:
+        case NO_SIDE_EFFECTS:
           ast = sideEffects.apply(ast);
           deltas.push(...sideEffects.getAllDeltas());
           break;
 
-        case rulesEnum.encapsulateConditions:
+        case ENCAPSULATE_CONDITIONS:
           ast = encapsulateConditions.apply(ast);
           deltas.push(...encapsulateConditions.getAllDeltas());
           break;
