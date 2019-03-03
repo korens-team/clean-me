@@ -16,7 +16,7 @@ const operationsMap = {
   "===": "equals"
 };
 
-const codeErrors = [];
+const deltas = [];
 
 export default class EncapsulateConditions {
   static apply(syntaxTree) {
@@ -43,7 +43,7 @@ export default class EncapsulateConditions {
     });
 
     logicStatementsArray.forEach(logicStatment => {
-      codeErrors.push({
+      deltas.push({
         start: logicStatment.ifNode.loc.start.line,
         end: logicStatment.ifNode.loc.end.line,
         description: "Encapsulate complex if statments to const variable"
@@ -124,6 +124,6 @@ export default class EncapsulateConditions {
   }
 
   static getAllDeltas() {
-    return codeErrors;
+    return deltas;
   }
 }

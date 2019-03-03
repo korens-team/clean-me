@@ -13,7 +13,7 @@ import {
 const CamelCase_Regex = /^[a-z]+([A-Z][a-z0-9]+)*$/;
 const SnakeCase_Regex = /^[A-Z]+(\_[A-Z0-9]+)*/;
 
-const codeErrors = [];
+const deltas = [];
 
 export default class NamingConventions {
   static apply(syntaxTree) {
@@ -71,10 +71,9 @@ export default class NamingConventions {
             SnakeCase_Regex.test(declerationObj.name)
           )
         ) {
-          // console.log(chalk.red("Use camelCase for vars declerations, row: " + declerationObj.row + " value: " + declerationObj.name));
           declerationObj.newName = _.camelCase(declerationObj.name);
-          // console.log("Use " + declerationObj.newName + " instead");
-          codeErrors.push({
+          
+          deltas.push({
             start: declerationObj.row,
             end: declerationObj.row,
             description:
@@ -88,10 +87,9 @@ export default class NamingConventions {
         declerationObj.kind == "const" &&
         !SnakeCase_Regex.test(declerationObj.name.toLowerCase())
       ) {
-        // console.log(chalk.red("use SNAKE_CASE for const numbers, row: " + declerationObj.row + " value: " + declerationObj.name));
         declerationObj.newName = _.snakeCase(declerationObj.name).toUpperCase();
-        // console.log("Use " + declerationObj.newName + " instead");
-        codeErrors.push({
+        
+        deltas.push({
           start: declerationObj.row,
           end: declerationObj.row,
           description:
@@ -150,6 +148,6 @@ export default class NamingConventions {
   }
 
   static getAllDeltas() {
-    return codeErrors;
+    return deltas;
   }
 }

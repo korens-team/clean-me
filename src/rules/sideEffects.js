@@ -48,7 +48,7 @@ export default class SideEffectRule {
     return newAst;
   }
 
-  static getAllDeltas() {
+  static getAlldeltas() {
     return deltas;
   }
 }
