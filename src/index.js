@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
+/* eslint-disable no-console */ 
+
 import chalk from "chalk";
 import figlet from "figlet";
 import fs from "fs";
 import codegen from "escodegen";
-
-import { esprima } from "esprima";
+import { parse } from "esprima";
 
 import {
   NAMING_CONVENTIONS,
@@ -45,7 +46,7 @@ const run = () => {
       if (filePath) {
         if (fs.existsSync(filePath)) {
           code = fs.readFileSync(filePath, "utf-8");
-          ast = esprima.parse(code, {
+          ast = parse(code, {
             raw: true,
             loc: true,
             range: true,
