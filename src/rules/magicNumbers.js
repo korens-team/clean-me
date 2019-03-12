@@ -14,13 +14,15 @@ import {
 
 let varName = "VAR_0";
 let varIndex = 0;
+let deltas = [];
 
 export default class magicNumbers {
   static apply(ast) {
     var parents = [];
     var lastVar;
 
-    let deltas = this.deltas;
+    const getVarSuggestionFunc = this.getVarSuggestion;
+
     const result = estraverse.replace(ast, {
       enter: function(node, parent) {
         if (
@@ -41,7 +43,7 @@ export default class magicNumbers {
           (parent.type != VARIABLE_DECLARATOR_TYPE && parent.type != PROPERTY_TYPE) &&
           node.type == LITERAL_TYPE
         ) {
-          lastVar = this.getVarSuggestion();
+          lastVar = getVarSuggestionFunc();
           if (node.loc) {
             const delta = {
               start: node.loc.start.line,
@@ -107,7 +109,7 @@ export default class magicNumbers {
   }
 
   static getAllDeltas() {
-    return this.deltas;
+    return deltas;
   }
 
   static getVarSuggestion() {

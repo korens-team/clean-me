@@ -6,7 +6,9 @@ import {
   LOGICAL_EXPRESSION_TYPE,
   IDENTIFIER_TYPE,
   BINARY_EXPRESSION_TYPE,
-  LITERAL_TYPE
+  LITERAL_TYPE,
+  VARIABLE_DECLARATION_TYPE,
+  VARIABLE_DECLARATOR_TYPE
 } from "./consts/types";
 
 const operationsMap = {
@@ -50,12 +52,12 @@ export default class EncapsulateConditions {
       });
 
       var toAppend = {
-        type: "VariableDeclaration",
+        type: VARIABLE_DECLARATION_TYPE,
         declarations: [
           {
-            type: "VariableDeclarator",
+            type: VARIABLE_DECLARATOR_TYPE,
             id: {
-              type: "Identifier",
+              type: IDENTIFIER_TYPE,
               name: _.camelCase("check_" + logicStatment.subVarsNames.join("_"))
             },
             init: logicStatment.testLogic
@@ -69,7 +71,7 @@ export default class EncapsulateConditions {
 
     const newTree = estraverse.replace(syntaxTree, {
       enter: (node, parent) => {
-        if (node.loc) {
+        if(node.loc) {
           if (
             node.type == IF_STATEMENT_TYPE &&
             node.test.type == LOGICAL_EXPRESSION_TYPE
@@ -89,7 +91,7 @@ export default class EncapsulateConditions {
               });
               if (logic) {
                 node.test = {
-                  type: "Identifier",
+                  type: IDENTIFIER_TYPE,
                   name: logic.declarations[0].id.name
                 };
 
