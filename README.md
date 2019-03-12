@@ -1,23 +1,23 @@
 # CleamME
 ### Use clean me to refactor your code with some famous clean code principle.
-`The project still in development`
+__*`The project still in development`*__
 
 CleanMe will use the rules you pick to refactor when activate,
 all the rules suppose to help you maintain on cleaner and better code.
 
 **Rules:**
-- namingConventions: check if your code follow the names convantions (such as camel case for variables).
+- namingConventions: check if your code follow the names convantions (such as camel case for variables).  
     *in:*
-    ```
+    ```javascript
     let FirstName = "ofir"; 
     ```
     *out:*
-    ```
+    ```javascript
     let firstName = "ofir"; 
     ```
-- noFlagsArgs: check if your code contains flag function.
+- noFlagsArgs: check if your code contains flag function.  
    *in:*
-    ```
+    ```javascript
     function susu(a, b, c, d, isTemporary) {
         if (isTemporary) {
             console.log(a)
@@ -31,7 +31,7 @@ all the rules suppose to help you maintain on cleaner and better code.
     susu(1, 2, 3, 4, temp)
     ```
     *out:*
-    ```
+    ```javascript
     function susuisTemporary(a, c, d) {
         console.log(a);
         console.log(c);
@@ -47,9 +47,9 @@ all the rules suppose to help you maintain on cleaner and better code.
         susu(2);
     };
     ```
-- noSideEffects: check if your code contains functions with side effects.
+- noSideEffects: check if your code contains functions with side effects.  
    *in:*
-    ```
+    ```javascript
     function eliav(b) {
         const a = 111
         console.log(a)
@@ -60,7 +60,7 @@ all the rules suppose to help you maintain on cleaner and better code.
     eliav(b)
     ```
     *out:*
-    ```
+    ```javascript
     function eliav(b) {
         const a = 111;
         console.log(a);
@@ -69,23 +69,23 @@ all the rules suppose to help you maintain on cleaner and better code.
     let b = 1;
     b = eliav(b); 
     ```
-- noMagicNumbers: check if your code contains literals that can be conts variables.
+- noMagicNumbers: check if your code contains literals that can be conts variables.  
     *in:*
-    ```
+    ```javascript
     r = () => {
         return 7
     }
     ```
     *out:*
-    ```
+    ```javascript
     r = () => {
         const VAR_0 = 7;
         return VAR_0;
     };
     ```
-- encapsulateConditions: check if your code contains complex conditions that can be seperate to varible.
+- encapsulateConditions: check if your code contains complex conditions that can be seperate to varible.  
     *in:*
-    ```
+    ```javascript
     let a = 5;
     let b = 7;
     let c = 8;
@@ -96,7 +96,7 @@ all the rules suppose to help you maintain on cleaner and better code.
     }
     ```
     *out:*
-    ```
+    ```javascript
     let a = 5;
     let b = 7;
     let c = 8;
